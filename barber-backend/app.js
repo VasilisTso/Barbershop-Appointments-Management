@@ -24,4 +24,7 @@ app.use('/api', routes);
 // health
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+//so its not "Cannot Get"
+app.get('/', (req, res) => res.send('Barber backend running...'));
+
 export default app;
