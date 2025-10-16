@@ -29,6 +29,9 @@ export default router;
 
 // after DI
 export const UserController = ({ userService }) => {
+  // debug log
+  console.log('[DI TEST] UserController initialized with:', userService.constructor.name);
+  
   return {
     register: async (req, res) => {
       try {

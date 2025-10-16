@@ -72,8 +72,11 @@ export const AppointmentController = ({ appointmentService }) => {
 
     changeStatus: async (req, res) => {
       try {
-        const result = await appointmentService.changeStatus(req.params.id, req.body.status);
-        res.json(result);
+        const data = await appointmentService.changeStatus(
+          Number(req.params.id),
+          req.body.status
+        );
+        res.json(data);
       } catch (err) {
         res.status(400).json({ error: err.message });
       }
