@@ -1,3 +1,5 @@
+/* BEFORE DI
+
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -29,3 +31,27 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 export default router;
+*/
+
+// after DI
+export const ServiceController = ({ serviceService }) => {
+  return {
+    list: async (req, res) => {
+      try {
+        const data = await serviceService.listServices();
+        res.json(data);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    },
+
+    create: async (req, res) => {
+      try {
+        const data = await serviceService.createService(req.body);
+        res.status(201).json(data);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    }
+  };
+};

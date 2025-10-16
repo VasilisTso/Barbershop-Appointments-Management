@@ -1,3 +1,4 @@
+/* BEFORE DI
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -45,3 +46,37 @@ router.put('/:id/status', authMiddleware, async (req, res) => {
 });
 
 export default router;
+*/
+
+// after DI
+export const AppointmentController = ({ appointmentService }) => {
+  return {
+    book: async (req, res) => {
+      try {
+        const payload = { ...req.body, userId: req.user.id };
+        const result = await appointmentService.bookAppointment(payload);
+        res.status(201).json(result);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    },
+
+    list: async (req, res) => {
+      try {
+        const result = await appointmentService.listAppointments(req.user);
+        res.json(result);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    },
+
+    changeStatus: async (req, res) => {
+      try {
+        const result = await appointmentService.changeStatus(req.params.id, req.body.status);
+        res.json(result);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    }
+  };
+};

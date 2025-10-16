@@ -1,26 +1,35 @@
-//awilix setup
+//awilix setup, DI(Dependency Injection)
 
 import { createContainer, asClass, asValue } from 'awilix';
 import { scopePerRequest } from 'awilix-express';
-import { UserRepository } from './repositories/userRepository.js';
-import { UserService } from './services/userService.js';
 import { prisma } from './prismaClient.js';
+
+// repos
+import { UserRepository } from './repositories/userRepository.js';
 import { ServiceRepository } from './repositories/serviceRepository.js';
-import { ServiceService } from './services/serviceService.js';
 import { AppointmentRepository } from './repositories/appointmentRepository.js';
+
+// services
+import { UserService } from './services/userService.js';
+import { ServiceService } from './services/serviceService.js';
 import { AppointmentService } from './services/appointmentService.js';
 
-export const container = createContainer();
+const container = createContainer();
 
 container.register({
+  // low-level / values
   prisma: asValue(prisma),
+
+  // repos
   userRepository: asClass(UserRepository).scoped(),
-  userService: asClass(UserService).scoped(),
-  serviceRepository: asClass(ServiceRepository).scoped(),
-  serviceService: asClass(ServiceService).scoped(),
   appointmentRepository: asClass(AppointmentRepository).scoped(),
+  serviceRepository: asClass(ServiceRepository).scoped(),
+
+  //service
+  serviceService: asClass(ServiceService).scoped(),
+  userService: asClass(UserService).scoped(),
   appointmentService: asClass(AppointmentService).scoped(),
 });
 
 // in app, use scopePerRequest(container) to attach scoped containers per req
-export default container;
+export { container, scopePerRequest };
