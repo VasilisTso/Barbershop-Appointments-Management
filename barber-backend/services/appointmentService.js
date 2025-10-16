@@ -62,6 +62,6 @@ export class AppointmentService {
   }
 
   async changeStatus(id, status) {
-    return this.appointmentRepo.updateStatus(id, status);
+    return this.appointmentRepo.update(id, { status });
   }
 }

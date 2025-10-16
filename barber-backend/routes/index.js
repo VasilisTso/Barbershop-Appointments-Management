@@ -15,8 +15,7 @@ import { requireAdmin } from '../middleware/requireAdmin.js';
 // validators
 import { validateRegister, validateLogin } from '../validators/userValidator.js';
 import { validateService } from '../validators/serviceValidator.js';
-import { validateAppointment } from '../validators/appointmentValidator.js';
-
+import { validateAppointmentCreate, validateAppointmentUpdate } from '../validators/appointmentValidator.js';
 
 const router = Router();
 
@@ -42,9 +41,9 @@ router.delete('/services/:id', authMiddleware, requireAdmin, serviceAPI('remove'
 router.get('/appointments', authMiddleware, appointmentAPI('list'));
 // for finishing CRUD getOne
 router.get('/appointments/:id', authMiddleware, appointmentAPI('getOne'));
-router.post('/appointments', authMiddleware, validateAppointment, appointmentAPI('book'));
+router.post('/appointments', authMiddleware, validateAppointmentCreate, appointmentAPI('book'));
 // for finishing CRUD update, remove
-router.put('/appointments/:id', authMiddleware, validateAppointment, appointmentAPI('update'));
+router.put('/appointments/:id', authMiddleware, validateAppointmentUpdate, appointmentAPI('update'));
 router.delete('/appointments/:id', authMiddleware, appointmentAPI('remove'));
 router.put('/appointments/:id/status', authMiddleware, requireAdmin, appointmentAPI('changeStatus'));
 
