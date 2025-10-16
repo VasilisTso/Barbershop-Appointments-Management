@@ -31,7 +31,7 @@ router.post('/users/login', validateLogin, userAPI('login'));
 
 // Service routes
 router.get('/services', serviceAPI('list'));
-// for finishing CRUD
+// for finishing CRUD getOne
 router.get('/services/:id', serviceAPI('getOne'));
 router.post('/services', authMiddleware, requireAdmin, validateService, serviceAPI('create'));
 // for finishing CRUD
@@ -39,8 +39,13 @@ router.put('/services/:id', authMiddleware, requireAdmin, validateService, servi
 router.delete('/services/:id', authMiddleware, requireAdmin, serviceAPI('remove'));
 
 // Appointment routes
-router.post('/appointments', authMiddleware, validateAppointment, appointmentAPI('book'));
 router.get('/appointments', authMiddleware, appointmentAPI('list'));
+// for finishing CRUD getOne
+router.get('/appointments/:id', authMiddleware, appointmentAPI('getOne'));
+router.post('/appointments', authMiddleware, validateAppointment, appointmentAPI('book'));
+// for finishing CRUD update, remove
+router.put('/appointments/:id', authMiddleware, validateAppointment, appointmentAPI('update'));
+router.delete('/appointments/:id', authMiddleware, appointmentAPI('remove'));
 router.put('/appointments/:id/status', authMiddleware, requireAdmin, appointmentAPI('changeStatus'));
 
 export default router;

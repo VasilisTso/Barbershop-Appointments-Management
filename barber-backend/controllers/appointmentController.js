@@ -51,35 +51,63 @@ export default router;
 // after DI
 export const AppointmentController = ({ appointmentService }) => {
   return {
-    book: async (req, res) => {
+    list: async (req, res) => {
       try {
-        const payload = { ...req.body, userId: req.user.id };
-        const result = await appointmentService.bookAppointment(payload);
-        res.status(201).json(result);
+        const data = await appointmentService.listAppointments(req.user);
+        res.json(data);
       } catch (err) {
         res.status(400).json({ error: err.message });
       }
     },
 
-    list: async (req, res) => {
+    getOne: async (req, res) => {
       try {
-        const result = await appointmentService.listAppointments(req.user);
-        res.json(result);
+        const data = await appointmentService.getAppointment(Number(req.params.id), req.user);
+        res.json(data);
+      } catch (err) {
+        res.status(403).json({ error: err.message });
+      }
+    },
+
+    book: async (req, res) => {
+      try {
+        const payload = { ...req.body, userId: req.user.id };
+        const data = await appointmentService.bookAppointment(payload);
+        res.status(201).json(data);
       } catch (err) {
         res.status(400).json({ error: err.message });
+      }
+    },
+
+    update: async (req, res) => {
+      try {
+        const data = await appointmentService.updateAppointment(
+          Number(req.params.id),
+          req.body,
+          req.user
+        );
+        res.json(data);
+      } catch (err) {
+        res.status(403).json({ error: err.message });
+      }
+    },
+
+    remove: async (req, res) => {
+      try {
+        await appointmentService.deleteAppointment(Number(req.params.id), req.user);
+        res.status(204).send();
+      } catch (err) {
+        res.status(403).json({ error: err.message });
       }
     },
 
     changeStatus: async (req, res) => {
       try {
-        const data = await appointmentService.changeStatus(
-          Number(req.params.id),
-          req.body.status
-        );
+        const data = await appointmentService.changeStatus(Number(req.params.id), req.body.status);
         res.json(data);
       } catch (err) {
         res.status(400).json({ error: err.message });
       }
-    }
+    },
   };
 };

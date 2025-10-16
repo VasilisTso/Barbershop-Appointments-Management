@@ -7,6 +7,12 @@ export class AppointmentRepository {
     return this.prisma.appointment.create({ data });
   }
 
+  async getAll() {
+    return this.prisma.appointment.findMany({
+      include: { service: true, user: true },
+    });
+  }
+
   async getAllByUser(userId) {
     return this.prisma.appointment.findMany({
       where: { userId },
@@ -14,16 +20,21 @@ export class AppointmentRepository {
     });
   }
 
-  async getAll() {
-    return this.prisma.appointment.findMany({
-      include: { service: true, user: true },
+  async getById(id) {
+    return this.prisma.appointment.findUnique({
+      where: { id },
+      include: { service: true },
     });
   }
 
-  async updateStatus(id, status) {
+  async update(id, data) {
     return this.prisma.appointment.update({
-      where: { id: Number(id) },
-      data: { status },
+      where: { id },
+      data,
     });
+  }
+
+  async delete(id) {
+    return this.prisma.appointment.delete({ where: { id } });
   }
 }
