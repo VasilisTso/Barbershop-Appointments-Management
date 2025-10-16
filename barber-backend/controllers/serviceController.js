@@ -45,6 +45,15 @@ export const ServiceController = ({ serviceService }) => {
       }
     },
 
+    getOne: async (req, res) => {
+      try {
+        const data = await serviceService.getServiceById(Number(req.params.id));
+        res.json(data);
+      } catch (err) {
+        res.status(404).json({ error: err.message });
+      }
+    },
+
     create: async (req, res) => {
       try {
         const data = await serviceService.createService(req.body);
@@ -52,6 +61,24 @@ export const ServiceController = ({ serviceService }) => {
       } catch (err) {
         res.status(400).json({ error: err.message });
       }
-    }
+    },
+
+    update: async (req, res) => {
+      try {
+        const data = await serviceService.updateService(Number(req.params.id), req.body);
+        res.json(data);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    },
+
+    remove: async (req, res) => {
+      try {
+        await serviceService.deleteService(Number(req.params.id));
+        res.status(204).send();
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+      }
+    },
   };
 };

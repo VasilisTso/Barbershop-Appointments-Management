@@ -8,7 +8,7 @@ export class ServiceRepository {
   }
 
   async getById(id) {
-    return this.prisma.service.findUnique({ where: { id: Number(id) } });
+    return this.prisma.service.findUnique({ where: { id } });
   }
 
   async create(data) {
@@ -17,12 +17,12 @@ export class ServiceRepository {
 
   async update(id, data) {
     return this.prisma.service.update({
-      where: { id: Number(id) },
+      where: { id },
       data,
     });
   }
 
   async delete(id) {
-    return this.prisma.service.delete({ where: { id: Number(id) } });
+    return this.prisma.service.delete({ where: { id } });
   }
 }

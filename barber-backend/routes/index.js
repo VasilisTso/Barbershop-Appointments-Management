@@ -31,7 +31,12 @@ router.post('/users/login', validateLogin, userAPI('login'));
 
 // Service routes
 router.get('/services', serviceAPI('list'));
+// for finishing CRUD
+router.get('/services/:id', serviceAPI('getOne'));
 router.post('/services', authMiddleware, requireAdmin, validateService, serviceAPI('create'));
+// for finishing CRUD
+router.put('/services/:id', authMiddleware, requireAdmin, validateService, serviceAPI('update'));
+router.delete('/services/:id', authMiddleware, requireAdmin, serviceAPI('remove'));
 
 // Appointment routes
 router.post('/appointments', authMiddleware, validateAppointment, appointmentAPI('book'));

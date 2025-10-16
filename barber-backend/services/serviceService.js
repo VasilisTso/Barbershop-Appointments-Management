@@ -7,23 +7,28 @@ export class ServiceService {
     return this.serviceRepo.getAll();
   }
 
-  async getService(id) {
-    const svc = await this.serviceRepo.getById(id);
-    if (!svc) throw new Error('Service not found');
-    return svc;
+  async getServiceById(id) {
+    const service = await this.serviceRepo.getById(id);
+    if (!service) throw new Error('Service not found');
+    return service;
   }
 
   async createService(data) {
-    if (!data.name || !data.durationMin || !data.priceCents)
+    if (!data.name || !data.durationMin || !data.priceCents) {
       throw new Error('Missing required fields');
+    }
     return this.serviceRepo.create(data);
   }
 
   async updateService(id, data) {
+    const existing = await this.serviceRepo.getById(id);
+    if (!existing) throw new Error('Service not found');
     return this.serviceRepo.update(id, data);
   }
 
   async deleteService(id) {
+    const existing = await this.serviceRepo.getById(id);
+    if (!existing) throw new Error('Service not found');
     return this.serviceRepo.delete(id);
   }
 }
