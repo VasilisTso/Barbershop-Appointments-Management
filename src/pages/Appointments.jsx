@@ -7,6 +7,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 
+/*
 function Appointments() {
   const { user, isAdmin } = useContext(AuthContext); // eslint-disable-line no-unused-vars
   const [appointments, setAppointments] = useState([]);
@@ -69,6 +70,89 @@ function Appointments() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+export default Appointments
+*/
+
+function Appointments() {
+  const { user } = useContext(AuthContext);
+  const [appointments, setAppointments] = useState([]);
+
+  const fetchAppointments = async () => {
+    try {
+      const res = await api.get("/appointments");
+      setAppointments(res.data);
+    } catch (err) {
+      console.error("Failed to fetch appointments", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const updateStatus = async (id, status) => {
+    try {
+      await api.put(`/appointments/${id}/status`, { status });
+      fetchAppointments();
+    } catch (err) {
+      alert("Failed to update status");
+    }
+  };
+
+  if (!appointments.length)
+    return <p className="text-center text-gray-500 mt-10">No appointments yet.</p>;
+
+  return (
+    <div className="max-w-5xl mx-auto mt-10">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+        {user.role === "ADMIN" ? "All Appointments" : "My Appointments"}
+      </h2>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-xl">
+          <thead className="bg-blue-600 text-white">
+            <tr>
+              <th className="py-3 px-4 text-left">Service</th>
+              <th className="py-3 px-4 text-left">Start Time</th>
+              <th className="py-3 px-4 text-left">Status</th>
+              <th className="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {appointments.map((a) => (
+              <tr
+                key={a.id}
+                className="border-t hover:bg-gray-50 transition text-gray-700"
+              >
+                <td className="py-3 px-4">{a.service.name}</td>
+                <td className="py-3 px-4">
+                  {new Date(a.startAt).toLocaleString()}
+                </td>
+                <td className="py-3 px-4 font-semibold">{a.status}</td>
+                <td className="py-3 px-4 text-right">
+                  {user.role === "ADMIN" ? (
+                    <select
+                      value={a.status}
+                      onChange={(e) => updateStatus(a.id, e.target.value)}
+                      className="border border-gray-300 rounded px-2 py-1"
+                    >
+                      <option value="PENDING">Pending</option>
+                      <option value="CONFIRMED">Confirmed</option>
+                      <option value="CANCELLED">Cancelled</option>
+                    </select>
+                  ) : (
+                    <span className="text-sm text-gray-500 italic">User View</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

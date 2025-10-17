@@ -6,41 +6,81 @@ import { AuthContext } from '../context/AuthContext';
 
 function Services() {
   const [services, setServices] = useState([]);
-  const { user, isAdmin } = useContext(AuthContext);  // eslint-disable-line no-unused-vars
+  const { user, } = useContext(AuthContext);  
+
+  const fetchServices = async () => {
+    try {
+      const res = await api.get("/services");
+      setServices(res.data);
+    } catch (err) {
+      console.error("Failed to fetch services", err);
+    }
+  };
 
   useEffect(() => {
-    api.get('/services').then(res => setServices(res.data)).catch(console.error);
+    fetchServices();
   }, []);
 
-  const deleteService = async (id) => {
-    if (!confirm('Delete service?')) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this service?")) return;
     try {
       await api.delete(`/services/${id}`);
-      setServices(s => s.filter(x => x.id !== id));
+      fetchServices();
     } catch (err) {
-      alert(err.response?.data?.error || err.message);
+      alert("Error deleting service", err);
     }
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Services</h1>
-      {isAdmin() && <Link to="/services/create" className="bg-blue-500 text-white px-3 py-1 rounded">Create Service</Link>}
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {services.map(s => (
-          <div key={s.id} className="border p-4 rounded">
-            <h3 className="font-semibold">{s.name}</h3>
-            <div>Duration: {s.durationMin} min</div>
-            <div>Price: {(s.priceCents/100).toFixed(2)} €</div>
-            <div className="mt-2 flex gap-2">
-              {isAdmin() && <>
-                <Link to={`/services/edit/${s.id}`} className="px-2 py-1 text-blue-700 hover:underline">Edit</Link>
-                <button onClick={()=>deleteService(s.id)} className="px-2 py-1 bg-red-500 text-white rounded">Delete</button>
-              </>}
+    <div className="max-w-6xl mx-auto mt-10">
+      <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
+        Our Services
+      </h2>
+
+      {services.length === 0 ? (
+        <p className="text-center text-gray-500">No services available yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {services.map((s) => (
+            <div
+              key={s.id}
+              className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 hover:shadow-2xl transition"
+            >
+              <h3 className="text-xl font-bold mb-2 text-gray-800">{s.name}</h3>
+              <p className="text-gray-600">Duration: {s.durationMin} min</p>
+              <p className="text-gray-700 font-semibold mt-2">
+                Price: €{(s.priceCents / 100).toFixed(2)}
+              </p>
+
+              {user && user.role === "ADMIN" ? (
+                <div className="flex justify-between mt-4">
+                  <Link
+                    to={`/services/edit/${s.id}`}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="text-red-600 hover:underline font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : user ? (
+                <div className="mt-4">
+                  <Link
+                    to={`/appointments?serviceId=${s.id}`}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                  >
+                    Book Now
+                  </Link>
+                </div>
+              ) : null}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
