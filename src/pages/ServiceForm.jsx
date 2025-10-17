@@ -92,7 +92,7 @@ function ServiceForm() {
         </div>
         <button
           type="submit"
-          className="mt-4 mb-4 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded w-full font-semibold"
+          className="mt-4 mb-4 bg-violet-800 hover:bg-violet-900 cursor-pointer text-white px-4 py-2 rounded w-full font-semibold"
         >
           {id ? "Update Service" : "Create Service"}
         </button>

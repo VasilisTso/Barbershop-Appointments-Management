@@ -117,7 +117,7 @@ function Appointments() {
             />
 
             <button
-              className="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition cursor-pointer"
+              className="flex justify-center items-center gap-2 bg-violet-800 hover:bg-violet-900 text-white px-4 py-2 rounded-lg transition cursor-pointer"
               onClick={() => {
                 const serviceId = Number(selectedService); // controlled state value
                 const startInput = document.getElementById("start-input").value;

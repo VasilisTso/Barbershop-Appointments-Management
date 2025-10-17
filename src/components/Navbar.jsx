@@ -17,7 +17,7 @@ function Navbar() {
     <nav className="bg-gray-800 text-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center p-4">
         <Link to="/" className="text-2xl font-bold tracking-tight">
-          💈 Barber VT
+          💈 <span className='bg-gradient-to-r from-violet-800 to-white bg-clip-text text-transparent'>Barber VT</span>
         </Link>
 
         {/* Hamburger */}
@@ -47,7 +47,7 @@ function Navbar() {
               {user.role === "ADMIN" && (
                 <Link
                   to="/services/create"
-                  className="flex justify-center items-center gap-2 bg-blue-600 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-blue-700 transition"
+                  className="flex justify-center items-center gap-2 bg-violet-800 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-violet-900 transition"
                 >
                   Add Service <IoAddCircle />
                 </Link>

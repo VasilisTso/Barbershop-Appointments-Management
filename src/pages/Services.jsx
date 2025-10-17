@@ -46,9 +46,9 @@ function Services() {
           {services.map((s) => (
             <div
               key={s.id}
-              className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 hover:shadow-2xl transition"
+              className="bg-white shadow-lg rounded-xl p-6 flex flex-col justify-between h-full border border-gray-100 hover:shadow-2xl transition"
             >
-              <h3 className="text-xl font-bold mb-8 text-gray-800">{s.name}</h3>
+              <h3 className="min-h-[60px] text-xl font-bold mb-8 text-gray-800">{s.name}</h3>
               <p className="text-gray-600"><span className='font-semibold'>Duration:</span> {s.durationMin} min</p>
               <p className="text-gray-700 mt-2"><span className='font-semibold'>Price:</span> €{(s.priceCents / 100).toFixed(2)}</p>
 
@@ -56,7 +56,7 @@ function Services() {
                 <div className="flex justify-between mt-8">
                   <Link
                     to={`/services/edit/${s.id}`}
-                    className="flex justify-center items-center gap-2 text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
+                    className="flex justify-center items-center gap-2 text-violet-800 hover:text-violet-900 font-medium cursor-pointer"
                   >
                     Edit <FiEdit />
                   </Link>
@@ -72,7 +72,7 @@ function Services() {
                   {/* added service name so it stays there when redirecting to appointments */}
                   <Link
                     to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
-                    className="flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="flex justify-center items-center gap-2 bg-violet-800 text-white px-4 py-2 rounded-lg hover:bg-violet-900 transition"
                   >
                     Book Now <MdOutlineArrowOutward />
                   </Link>

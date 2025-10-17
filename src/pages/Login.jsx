@@ -55,7 +55,7 @@ function Login() {
     try {
       await login({ email, password });
       toast.success("Logged in successfully!");
-      navigate("/services");
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Invalid email or password");
@@ -101,7 +101,7 @@ function Login() {
             className={`w-full text-white font-semibold py-2 rounded-lg transition cursor-pointer ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-violet-800 hover:bg-violet-900"
             }`}
           >
             {loading ? "Logging in..." : "Login"}
@@ -110,7 +110,7 @@ function Login() {
 
         <p className="text-gray-600 text-sm mt-6 text-center">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-violet-800 hover:underline">
             Register
           </Link>
         </p>
