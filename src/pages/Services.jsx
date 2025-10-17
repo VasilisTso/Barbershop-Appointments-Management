@@ -4,6 +4,7 @@ import api from '../services/api';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FiEdit, FiTrash } from "react-icons/fi";
+import { MdOutlineArrowOutward } from "react-icons/md";
 
 function Services() {
   const [services, setServices] = useState([]);
@@ -34,12 +35,12 @@ function Services() {
 
   return (
     <div className="max-w-6xl mx-auto mt-10">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
+      <h2 className="text-3xl font-semibold text-white mb-10 text-center">
         Our Services
       </h2>
 
       {services.length === 0 ? (
-        <p className="text-center text-gray-500">No services available yet.</p>
+        <p className="text-center text-gray-300">No services available yet.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {services.map((s) => (
@@ -47,35 +48,33 @@ function Services() {
               key={s.id}
               className="bg-white shadow-lg rounded-xl p-6 border border-gray-100 hover:shadow-2xl transition"
             >
-              <h3 className="text-xl font-bold mb-2 text-gray-800">{s.name}</h3>
-              <p className="text-gray-600">Duration: {s.durationMin} min</p>
-              <p className="text-gray-700 font-semibold mt-2">
-                Price: €{(s.priceCents / 100).toFixed(2)}
-              </p>
+              <h3 className="text-xl font-bold mb-8 text-gray-800">{s.name}</h3>
+              <p className="text-gray-600"><span className='font-semibold'>Duration:</span> {s.durationMin} min</p>
+              <p className="text-gray-700 mt-2"><span className='font-semibold'>Price:</span> €{(s.priceCents / 100).toFixed(2)}</p>
 
               {user && user.role === "ADMIN" ? (
-                <div className="flex justify-between mt-4">
+                <div className="flex justify-between mt-8">
                   <Link
                     to={`/services/edit/${s.id}`}
-                    className="text-blue-600 hover:underline font-medium"
+                    className="flex justify-center items-center gap-2 text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                   >
-                    <FiEdit /> Edit
+                    Edit <FiEdit />
                   </Link>
                   <button
                     onClick={() => handleDelete(s.id)}
-                    className="text-red-600 hover:underline font-medium"
+                    className="flex justify-center items-center gap-2 text-red-600 hover:text-red-700 font-medium cursor-pointer"
                   >
-                    <FiTrash /> Delete
+                    Delete <FiTrash />
                   </button>
                 </div>
               ) : user ? (
-                <div className="mt-4">
+                <div className="mt-8">
                   {/* added service name so it stays there when redirecting to appointments */}
                   <Link
                     to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    className="flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                   >
-                    Book Now
+                    Book Now <MdOutlineArrowOutward />
                   </Link>
                 </div>
               ) : null}

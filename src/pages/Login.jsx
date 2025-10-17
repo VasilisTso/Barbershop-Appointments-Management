@@ -66,9 +66,9 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        <h2 className="text-2xl font-bold mb-12 text-center text-gray-800">
           Welcome Back
         </h2>
 
@@ -98,7 +98,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-semibold py-2 rounded-lg transition ${
+            className={`w-full text-white font-semibold py-2 rounded-lg transition cursor-pointer ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -108,7 +108,7 @@ function Login() {
           </button>
         </form>
 
-        <p className="text-gray-600 text-sm mt-4 text-center">
+        <p className="text-gray-600 text-sm mt-6 text-center">
           Don’t have an account?{" "}
           <Link to="/register" className="text-blue-600 hover:underline">
             Register

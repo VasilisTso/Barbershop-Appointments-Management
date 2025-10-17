@@ -3,6 +3,9 @@ import React, { useContext, useState } from 'react';
 import { Link,  } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FiMenu, FiX } from "react-icons/fi";
+import { IoAddCircle } from "react-icons/io5";
+import { CiLogout, CiLogin } from "react-icons/ci";
+import { FaUser } from "react-icons/fa";
 
 function Navbar() {
   const { user, logout, } = useContext(AuthContext);
@@ -29,24 +32,24 @@ function Navbar() {
         <div
           className={`${
             menuOpen ? "flex" : "hidden"
-          } md:flex flex-col md:flex-row gap-4 absolute md:static top-16 left-0 w-full md:w-auto bg-gray-800 md:bg-transparent p-4 md:p-0`}
+          } md:flex justify-center items-center flex-col md:flex-row gap-4 absolute md:static top-16 left-0 w-full md:w-auto bg-gray-800 md:bg-transparent p-4 md:p-0`}
         >
-          <Link to="/services" className="hover:text-gray-300">
+          <Link to="/services" className="hover:text-gray-300 pr-6 border-r border-gray-600">
             Services
           </Link>
 
           {user && (
             <>
-              <Link to="/appointments" className="hover:text-gray-300">
+              <Link to="/appointments" className="hover:text-gray-300 pr-6 border-r border-gray-600">
                 Appointments
               </Link>
 
               {user.role === "ADMIN" && (
                 <Link
                   to="/services/create"
-                  className="bg-blue-500 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-blue-700 transition"
+                  className="flex justify-center items-center gap-2 bg-blue-600 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-blue-700 transition"
                 >
-                  Add Service
+                  Add Service <IoAddCircle />
                 </Link>
               )}
             </>
@@ -54,19 +57,19 @@ function Navbar() {
           
           {!user ? (
             <>
-              <Link to="/login" className="hover:text-gray-300">
-                Login
+              <Link to="/login" className="flex justify-center items-center gap-1 hover:text-gray-300 pr-6 border-r border-gray-600">
+                Login <CiLogin />
               </Link>
-              <Link to="/register" className="hover:text-gray-300">
-                Register
+              <Link to="/register" className="flex justify-center items-center gap-1 hover:text-gray-300">
+                Register <FaUser />
               </Link>
             </>
           ) : (
             <button
               onClick={logout}
-              className="bg-red-500 hover:bg-red-600 cursor-pointer px-3 py-1 rounded-md transition"
+              className="flex justify-center items-center gap-2 bg-red-600 hover:bg-red-700 cursor-pointer px-3 py-1 text-center font-medium rounded-md transition"
             >
-              Logout
+              Logout <CiLogout />
             </button>
           )}
         </div>

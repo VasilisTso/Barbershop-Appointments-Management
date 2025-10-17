@@ -51,9 +51,9 @@ function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        <h2 className="text-2xl font-bold mb-12 text-center text-gray-800">
           Create Your Account
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -84,7 +84,7 @@ function Register() {
             Register
           </button>
         </form>
-        <p className="text-gray-600 text-sm mt-4 text-center">
+        <p className="text-gray-600 text-sm mt-6 text-center">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">
             Login

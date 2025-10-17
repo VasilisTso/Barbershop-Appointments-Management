@@ -22,32 +22,34 @@ function PrivateRoute({ children, adminOnly = false }) {
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Navbar />
-        <div className="container mx-auto p-4 bg-gradient-to-br from-gray-">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/services/create" element={
-              <PrivateRoute adminOnly>
-                <ServiceForm />
-              </PrivateRoute>
-            } />
-            <Route path="/services/edit/:id" element={
-              <PrivateRoute adminOnly>
-                <ServiceForm />
-              </PrivateRoute>
-            } />
-            <Route path="/appointments" element={
-              <PrivateRoute>
-                <Appointments />
-              </PrivateRoute>
-            } />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
+      <div className='min-h-screen bg-gradient-to-br from-[#0f0224] via-gray-700 to-gray-900'>
+        <BrowserRouter>
+          <Navbar />
+          <div className="container mx-auto p-4">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/services/create" element={
+                <PrivateRoute adminOnly>
+                  <ServiceForm />
+                </PrivateRoute>
+              } />
+              <Route path="/services/edit/:id" element={
+                <PrivateRoute adminOnly>
+                  <ServiceForm />
+                </PrivateRoute>
+              } />
+              <Route path="/appointments" element={
+                <PrivateRoute>
+                  <Appointments />
+                </PrivateRoute>
+              } />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </div>
     </>
   )
 }

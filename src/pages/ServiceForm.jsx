@@ -57,7 +57,7 @@ function ServiceForm() {
       <h2 className="text-2xl text-white font-semibold mb-4 text-center">
         {id ? "Edit Service" : "Add New Service"}
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 px-2">
         <div>
           <label className="block text-white text-xl font-medium mb-1">Name</label>
           <input
@@ -92,7 +92,7 @@ function ServiceForm() {
         </div>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded w-full font-semibold"
+          className="mt-4 mb-4 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded w-full font-semibold"
         >
           {id ? "Update Service" : "Create Service"}
         </button>
