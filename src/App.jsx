@@ -24,7 +24,7 @@ function App() {
     <>
       <BrowserRouter>
         <Navbar />
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 bg-gradient-to-br from-gray-">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />

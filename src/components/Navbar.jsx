@@ -1,10 +1,14 @@
 // src/components/Navbar.jsx
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // eslint-disable-line no-unused-vars
+import React, { useContext, useState } from 'react';
+import { Link,  } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FiMenu, FiX } from "react-icons/fi";
 
 function Navbar() {
   const { user, logout, } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
     <nav className="bg-gray-800 text-white shadow-lg sticky top-0 z-50">
@@ -13,13 +17,27 @@ function Navbar() {
           💈 Barber VT
         </Link>
 
-        <div className="flex items-center gap-4 text-lg">
-          <Link to="/services" className="text-gray-100 hover:text-gray-300">
+        {/* Hamburger */}
+        <button
+          onClick={toggleMenu}
+          className="md:hidden text-2xl focus:outline-none"
+        >
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
+
+        {/* Links */}
+        <div
+          className={`${
+            menuOpen ? "flex" : "hidden"
+          } md:flex flex-col md:flex-row gap-4 absolute md:static top-16 left-0 w-full md:w-auto bg-gray-800 md:bg-transparent p-4 md:p-0`}
+        >
+          <Link to="/services" className="hover:text-gray-300">
             Services
           </Link>
+
           {user && (
             <>
-              <Link to="/appointments" className="text-gray-100 hover:text-gray-300">
+              <Link to="/appointments" className="hover:text-gray-300">
                 Appointments
               </Link>
 
@@ -36,10 +54,10 @@ function Navbar() {
           
           {!user ? (
             <>
-              <Link to="/login" className="hover:underline">
+              <Link to="/login" className="hover:text-gray-300">
                 Login
               </Link>
-              <Link to="/register" className="hover:underline">
+              <Link to="/register" className="hover:text-gray-300">
                 Register
               </Link>
             </>

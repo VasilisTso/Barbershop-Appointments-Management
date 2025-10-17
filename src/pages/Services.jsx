@@ -3,6 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FiEdit, FiTrash } from "react-icons/fi";
 
 function Services() {
   const [services, setServices] = useState([]);
@@ -58,19 +59,20 @@ function Services() {
                     to={`/services/edit/${s.id}`}
                     className="text-blue-600 hover:underline font-medium"
                   >
-                    Edit
+                    <FiEdit /> Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(s.id)}
                     className="text-red-600 hover:underline font-medium"
                   >
-                    Delete
+                    <FiTrash /> Delete
                   </button>
                 </div>
               ) : user ? (
                 <div className="mt-4">
+                  {/* added service name so it stays there when redirecting to appointments */}
                   <Link
-                    to={`/appointments?serviceId=${s.id}`}
+                    to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                   >
                     Book Now
