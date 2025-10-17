@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import ServiceForm from './pages/ServiceForm';
 import Appointments from './pages/Appointments';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { AuthContext } from './context/AuthContext';
 
 
@@ -22,10 +23,13 @@ function PrivateRoute({ children, adminOnly = false }) {
 function App() {
   return (
     <>
-      <div className='min-h-screen bg-gradient-to-br from-[#0f0224] via-gray-700 to-gray-900'>
+      <div className='min-h-screen flex flex-col bg-gradient-to-br from-[#0f0224] via-gray-700 to-gray-900'>
         <BrowserRouter>
+
           <Navbar />
-          <div className="container mx-auto p-4">
+
+          {/* Main content area fills space between navbar and footer */}
+          <main className="flex-grow container mx-auto p-4">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<Services />} />
@@ -47,7 +51,9 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>
-          </div>
+          </main>
+
+          <Footer />
         </BrowserRouter>
       </div>
     </>

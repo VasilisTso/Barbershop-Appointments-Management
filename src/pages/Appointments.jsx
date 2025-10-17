@@ -12,16 +12,19 @@ import { MdCancel } from "react-icons/md";
 import { GiConfirmed } from "react-icons/gi";
 import { IoAddCircle } from "react-icons/io5";
 
-/* doesn't load error
+// doesn't load, error
 function Appointments() {
-  const { isAdmin } = useContext(AuthContext);
+  const { user, isAdmin } = useContext(AuthContext); // eslint-disable-line no-unused-vars
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
-  const [params] = useSearchParams();
-  const [selectedService, setSelectedService] = useState(selectedServiceId || "");
 
+  // FIRST define URL params
+  const [params] = useSearchParams();
   const selectedServiceId = params.get("serviceId");
-  const selectedServiceName = params.get("serviceName");
+  const selectedServiceName = params.get("serviceName"); // eslint-disable-line no-unused-vars
+
+  // THEN define the selectedService state using the param (if any)
+  const [selectedService, setSelectedService] = useState(selectedServiceId || "");
 
   // Fetch all appointments and services on page load
   useEffect(() => {
@@ -48,7 +51,7 @@ function Appointments() {
       }
     };
     load();
-  }, []);
+  }, [selectedServiceId]);
 
   // Book new appointment
   const book = async (serviceId, startAt) => {
@@ -79,7 +82,7 @@ function Appointments() {
   // Render
   return (
     <div className="max-w-5xl mx-auto mt-10">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+      <h1 className="text-3xl font-bold mb-6 text-center text-white">
         Appointments
       </h1>
 
@@ -114,7 +117,7 @@ function Appointments() {
             />
 
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+              className="flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition cursor-pointer"
               onClick={() => {
                 const serviceId = Number(selectedService); // controlled state value
                 const startInput = document.getElementById("start-input").value;
@@ -124,7 +127,7 @@ function Appointments() {
                 book(serviceId, startAt);
               }}
             >
-              Book
+              Book <IoAddCircle />
             </button>
           </div>
         </div>
@@ -141,13 +144,13 @@ function Appointments() {
             >
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div>
-                  <div className="text-lg font-semibold text-gray-800">
+                  <div className="text-lg font-semibold text-gray-800 mb-4">
                     {a.service?.name}
                   </div>
                   <div className="text-sm text-gray-600">
                     {new Date(a.startAt).toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-700 mt-1">
+                  <div className="text-sm text-gray-700 mt-4">
                     Status:{" "}
                     <span
                       className={`font-semibold ${
@@ -164,18 +167,18 @@ function Appointments() {
                 </div>
                     
                 {isAdmin() && (
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
                     <button
                       onClick={() => changeStatus(a.id, "CONFIRMED")}
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
+                      className="flex justify-center items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
                     >
-                      Confirm
+                      Confirm <GiConfirmed />
                     </button>
                     <button
                       onClick={() => changeStatus(a.id, "CANCELLED")}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+                      className="flex justify-center items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
                     >
-                      Cancel
+                      Cancel <MdCancel />
                     </button>
                   </div>
                 )}
@@ -189,10 +192,11 @@ function Appointments() {
 }
 
 export default Appointments
-*/
+
 
 
 // works but preselect doesn't work perfectly
+/*
 function Appointments() {
   const { isAdmin } = useContext(AuthContext);
   const [appointments, setAppointments] = useState([]);
@@ -255,7 +259,7 @@ function Appointments() {
 
       {!isAdmin() && (
         <div className="bg-white shadow-md rounded-xl p-6 mb-8">
-          <h3 className="font-semibold text-xl mb-4 white">
+          <h3 className="font-semibold text-xl mb-4 text-gray-700">
             Book an Appointment
           </h3>
 
@@ -362,3 +366,4 @@ function Appointments() {
 }
 
 export default Appointments
+*/
