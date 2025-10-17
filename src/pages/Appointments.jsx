@@ -8,7 +8,7 @@ import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 
 function Appointments() {
-  const { user, isAdmin } = useContext(AuthContext);
+  const { user, isAdmin } = useContext(AuthContext); // eslint-disable-line no-unused-vars
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
 

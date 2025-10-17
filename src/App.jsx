@@ -33,6 +33,11 @@ function App() {
                 <ServiceForm />
               </PrivateRoute>
             } />
+            <Route path="/services/edit/:id" element={
+              <PrivateRoute adminOnly>
+                <ServiceForm />
+              </PrivateRoute>
+            } />
             <Route path="/appointments" element={
               <PrivateRoute>
                 <Appointments />

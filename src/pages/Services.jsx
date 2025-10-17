@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 
 function Services() {
   const [services, setServices] = useState([]);
-  const { user, isAdmin } = useContext(AuthContext); 
+  const { user, isAdmin } = useContext(AuthContext);  // eslint-disable-line no-unused-vars
 
   useEffect(() => {
     api.get('/services').then(res => setServices(res.data)).catch(console.error);
@@ -34,7 +34,7 @@ function Services() {
             <div>Price: {(s.priceCents/100).toFixed(2)} €</div>
             <div className="mt-2 flex gap-2">
               {isAdmin() && <>
-                <Link to={`/services/edit/${s.id}`} className="px-2 py-1 border">Edit</Link>
+                <Link to={`/services/edit/${s.id}`} className="px-2 py-1 text-blue-700 hover:underline">Edit</Link>
                 <button onClick={()=>deleteService(s.id)} className="px-2 py-1 bg-red-500 text-white rounded">Delete</button>
               </>}
             </div>
