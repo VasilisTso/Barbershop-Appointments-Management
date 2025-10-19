@@ -48,14 +48,16 @@ function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const redirect = new URLSearchParams(location.search).get('redirect') || '/';
+
   const submit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
       await login({ email, password });
-      toast.success("Logged in successfully!");
-      navigate("/");
+      toast.success("Logged in successfully! Redirecting…", { duration: 1500 });
+      setTimeout(() => navigate(redirect), 400);
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.error || "Invalid email or password");

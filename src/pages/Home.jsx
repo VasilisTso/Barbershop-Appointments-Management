@@ -12,6 +12,7 @@ import { RiTailwindCssFill } from "react-icons/ri";
 import { IoLogoJavascript } from "react-icons/io5";
 import { SiPostman } from "react-icons/si";
 
+
 function Home() {
   const { user } = useContext(AuthContext);
   const [services, setServices] = useState([]);
@@ -41,16 +42,6 @@ function Home() {
       fetchServices();
     }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
-    try {
-      await api.delete(`/services/${id}`);
-      fetchServices();
-    } catch (err) {
-      alert("Error deleting service", err);
-    }
-  };
-
   return (
     <div className="py-24 flex flex-col items-center justify-center min-h-screen text-center rounded-2xl">
       <div>
@@ -68,12 +59,6 @@ function Home() {
           </p>
 
           <div className='flex justify-center flex-wrap gap-4'>
-            <Link to="/services" 
-              className='flex justify-center items-center gap-2 bg-violet-800 text-white px-6 py-3 rounded-lg shadow hover:bg-violet-900 font-medium hover:shadow-2xl transition transform hover:scale-102'
-            >
-              View Services <MdOutlineArrowOutward />
-            </Link>
-
             {!user && (
               <Link to="/register"
                 className="flex justify-center items-center gap-2 bg-gray-800 text-white px-6 py-3 rounded-lg shadow hover:bg-gray-900 font-medium hover:shadow-2xl transition transform hover:scale-102"
@@ -98,7 +83,7 @@ function Home() {
             <p className="text-center text-gray-300">No services available yet.</p>
           ) : (
             <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {services.map((s) => (
+              {services.slice(0, 3).map((s) => (
                 <div
                   key={s.id}
                   className="bg-white shadow-lg rounded-xl p-6 flex flex-col justify-between h-full border border-gray-100 hover:shadow-2xl transition"
@@ -107,36 +92,18 @@ function Home() {
                   <p className="text-gray-600"><span className='font-semibold'>Duration:</span> {s.durationMin} min</p>
                   <p className="text-gray-700 mt-2"><span className='font-semibold'>Price:</span> €{(s.priceCents / 100).toFixed(2)}</p>
     
-                  {user && user.role === "ADMIN" ? (
-                    <div className="flex justify-between mt-8">
-                      <Link
-                        to={`/services/edit/${s.id}`}
-                        className="flex justify-center items-center gap-2 text-violet-800 hover:text-violet-900 font-medium cursor-pointer"
-                      >
-                        Edit <FiEdit />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(s.id)}
-                        className="flex justify-center items-center gap-2 text-red-600 hover:text-red-700 font-medium cursor-pointer"
-                      >
-                        Delete <FiTrash />
-                      </button>
-                    </div>
-                  ) : user ? (
-                    <div className="mt-8 text-center">
-                      {/* added service name so it stays there when redirecting to appointments */}
-                      <Link
-                        to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
-                        className="flex justify-center items-center bg-violet-800 text-white px-4 py-2 rounded-lg hover:bg-violet-900 transition"
-                      >
-                        Book Now <MdOutlineArrowOutward />
-                      </Link>
-                    </div>
-                  ) : null}
                 </div>
               ))}
             </div>
           )}
+
+          <div className='flex justify-center flex-wrap'>
+            <Link to="/services" 
+              className='mt-8 flex justify-center items-center gap-2 bg-violet-800 text-white px-6 py-3 rounded-lg shadow hover:bg-violet-900 font-medium hover:shadow-2xl transition transform hover:scale-102'
+            >
+              View All  Services <MdOutlineArrowOutward />
+          </Link>
+          </div>
         </motion.div>
       </div>
 

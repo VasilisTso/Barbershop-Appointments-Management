@@ -57,10 +57,10 @@ function Navbar() {
           
           {!user ? (
             <>
-              <Link to="/login" className="flex justify-center items-center gap-1 hover:text-gray-300 pr-6 border-r border-gray-600">
+              <Link to="/login" className="flex justify-center items-center gap-1 hover:text-blue-500 pr-6 border-r border-gray-600">
                 Login <CiLogin />
               </Link>
-              <Link to="/register" className="flex justify-center items-center gap-1 hover:text-gray-300">
+              <Link to="/register" className="flex justify-center items-center gap-1 hover:text-blue-500">
                 Register <FaUser />
               </Link>
             </>

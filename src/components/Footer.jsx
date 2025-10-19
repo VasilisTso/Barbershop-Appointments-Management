@@ -23,7 +23,7 @@ function Footer() {
                 transition={{ delay: 0.4, duration: 1.2 }}
                 className="text-sm text-gray-400"
             >
-                © {new Date().getFullYear()} Vasilis Tsomakas. 
+                © Copyright Vasilis Tsomakas {new Date().getFullYear()}. All rights reserved.
             </motion.p>
         </footer>
     )

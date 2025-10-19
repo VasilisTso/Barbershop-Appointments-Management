@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import api from "../services/api";
+import toast from "react-hot-toast";
 
 /* before polish works
 function Register() {
@@ -47,6 +48,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await api.post("/users/register", form);
+    toast.success("Registered successfully!", { duration: 1500 });
     navigate("/login");
   };
 
