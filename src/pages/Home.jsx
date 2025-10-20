@@ -157,8 +157,8 @@ function Home() {
                         <Icon className="text-lg" />
                         <span>{skill.name}</span>
                     </motion.div>
-                    )
-                  })}
+                  )
+                })}
             </motion.div>
         </motion.div>
       </div>

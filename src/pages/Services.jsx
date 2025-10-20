@@ -6,6 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import { CiLogin } from "react-icons/ci";
+import { IoAddCircle } from "react-icons/io5";
 
 function Services() {
   const [services, setServices] = useState([]);
@@ -36,10 +37,21 @@ function Services() {
 
   return (
     <div className="max-w-6xl mx-auto mt-10">
-      <h2 className="text-3xl font-semibold text-white mb-10 text-center">
-        Our Services
-      </h2>
+      <div className='flex justify-between items-center mb-10'>
+        <h2 className="text-3xl font-semibold text-white text-center">
+          Our Services
+        </h2>
 
+        {user && user.role === "ADMIN" && (
+          <Link
+            to="/services/create"
+            className="flex justify-center items-center gap-2 bg-violet-800 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-violet-900 transition"
+          >
+            Add Service <IoAddCircle />
+          </Link>
+        )}
+      </div>
+      
       {services.length === 0 ? (
         <p className="text-center text-gray-300">No services available yet.</p>
       ) : (
@@ -80,11 +92,12 @@ function Services() {
                 </div>
               ) : (
                 <div className="mt-8 text-center">
+                  {/* if we want to redirect to service clicked do: to={`/login?redirect=/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}*/}
                   <Link
-                    to={`/login?redirect=/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
+                    to={`/login?redirect=/services`}
                     className="flex justify-center items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
                   >
-                    Login to Book <CiLogin />
+                    Login for more Info <CiLogin />
                   </Link>
                 </div>
               )}

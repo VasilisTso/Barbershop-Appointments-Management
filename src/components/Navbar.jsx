@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react';
 import { Link,  } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FiMenu, FiX } from "react-icons/fi";
-import { IoAddCircle } from "react-icons/io5";
 import { CiLogout, CiLogin } from "react-icons/ci";
 import { FaUser } from "react-icons/fa";
 
@@ -43,15 +42,6 @@ function Navbar() {
               <Link to="/appointments" className="hover:text-gray-300 pr-6 border-r border-gray-600">
                 Appointments
               </Link>
-
-              {user.role === "ADMIN" && (
-                <Link
-                  to="/services/create"
-                  className="flex justify-center items-center gap-2 bg-violet-800 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-violet-900 transition"
-                >
-                  Add Service <IoAddCircle />
-                </Link>
-              )}
             </>
           )}
           
