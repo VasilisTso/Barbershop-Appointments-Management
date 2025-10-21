@@ -35,7 +35,7 @@ Both backend and frontend are fully implemented:
 ### Backend (`/barber-backend`)
 src:
 - app.js # Express app with DI setup (Awilix)
-- index.js # Entry point
+- index.js # Entry point, Port for server
 - container.js # Awilix dependency container
 - routes/ # All Express routes
 - controllers/ # Controllers (no direct service imports)
