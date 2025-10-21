@@ -28,7 +28,6 @@ function App() {
 
           <Navbar />
 
-          {/* Main content area fills space between navbar and footer */}
           <main className="flex-grow container mx-auto p-4">
             <Routes>
               <Route path="/" element={<Home />} />
