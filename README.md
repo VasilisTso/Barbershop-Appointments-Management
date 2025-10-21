@@ -33,28 +33,28 @@ Both backend and frontend are fully implemented:
 ## Project Structure
 
 ### Backend (`/barber-backend`)
-src/
-├─ app.js # Express app with DI setup (Awilix)
-├─ index.js # Entry point
-├─ container.js # Awilix dependency container
-├─ routes/ # All Express routes
-├─ controllers/ # Controllers (no direct service imports)
-├─ services/ # Business logic
-├─ repositories/ # Database access (via Prisma)
-├─ validators/ # express-validator rules
-├─ prisma/ # Prisma schema & migrations
-└─ tests/ # Jest integration tests
+src:
+- app.js # Express app with DI setup (Awilix)
+- index.js # Entry point
+- container.js # Awilix dependency container
+- routes/ # All Express routes
+- controllers/ # Controllers (no direct service imports)
+- services/ # Business logic
+- repositories/ # Database access (via Prisma)
+- validators/ # express-validator rules
+- prisma/ # Prisma schema & migrations
+- tests/ # Jest integration tests
 
 ### Frontend (`/`)
 src/
-├─ postman/ # Exported collection from postman + test results
-├─ screenshots/ # Screenshots of working website
-├─ components/ # Reusable UI components (Navbar, Footer)
-├─ context/ # AuthContext (login/register state)
-├─ pages/ # Pages (Home, Services, Appointments, Login, Register, ServiceForm)
-├─ services/ # Axios setup
-├─ App.jsx, main.jsx # Router + layout
-├─ index.css # TailwindCSS
+- postman/ # Exported collection from postman + test results
+- screenshots/ # Screenshots of working website
+- components/ # Reusable UI components (Navbar, Footer)
+- context/ # AuthContext (login/register state)
+- pages/ # Pages (Home, Services, Appointments, Login, Register, ServiceForm)
+- services/ # Axios setup
+- App.jsx, main.jsx # Router + layout
+- index.css # TailwindCSS
 
 ---
 
@@ -63,6 +63,7 @@ src/
 ### Setup & Run the Backend
 
 cd barber-backend
+
 npm install
 
 .env file {
@@ -78,4 +79,5 @@ npm run dev
 ### Setup & Run the Frontend
 
 npm install
+
 npm run dev
