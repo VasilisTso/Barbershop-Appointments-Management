@@ -1,4 +1,4 @@
-<img width="1916" height="909" alt="Admin-Services" src="https://github.com/user-attachments/assets/39140fa1-4c94-4804-96da-3e291d567df3" /><img width="1903" height="906" alt="Login" src="https://github.com/user-attachments/assets/62ab586e-4a2e-4021-9c59-cfd9bfdb23ab" /># Barbershop-Appointments-Management
+# Barbershop-Appointments-Management
 
 A full-stack CRUD web application for managing **barbershop services and appointments**.  
 Built as a **university project**, it demonstrates modern web app design — authentication, service management, scheduling, and testing — using a clean architecture and dependency injection.
@@ -101,8 +101,8 @@ npm run dev
 <img width="1902" height="911" alt="Admin-Home2" src="https://github.com/user-attachments/assets/ee869fcc-f71e-4390-b070-ae8585916c97" />
 <img width="1916" height="909" alt="Admin-Services" src="https://github.com/user-attachments/assets/fae16377-6e23-47c8-b50c-12bd6a76d298" />
 <img width="1919" height="914" alt="Admin-Edit service" src="https://github.com/user-attachments/assets/7451e3e3-3b22-4a09-aa13-981744402ba5" />
-<img width="1901" height="912" alt="Admin-Appointments" src="https://github.com/user-attachments/assets/919da12b-7583-479d-8ba4-7c39210145ad" />
 <img width="1913" height="909" alt="Admin-Add service" src="https://github.com/user-attachments/assets/7f6bdc4b-6a1d-4de0-8ec0-b261413d73d0" />
+<img width="1901" height="912" alt="Admin-Appointments" src="https://github.com/user-attachments/assets/919da12b-7583-479d-8ba4-7c39210145ad" />
 
 ### User logged in
 <img width="1903" height="910" alt="User-Home" src="https://github.com/user-attachments/assets/71bd3235-389d-4e80-a1a4-a65b09b25d06" />
