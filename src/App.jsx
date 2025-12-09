@@ -23,12 +23,13 @@ function PrivateRoute({ children, adminOnly = false }) {
 function App() {
   return (
     <>
-      <div className='min-h-screen flex flex-col bg-gradient-to-br from-[#0f0224] via-gray-700 to-gray-900'>
+      {/* bg-gradient-to-br from-[#0f0224] via-gray-700 to-gray-900' */}
+      <div className='min-h-screen flex flex-col bg-[#030014] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]'>
         <BrowserRouter>
 
           <Navbar />
 
-          <main className="flex-grow container mx-auto p-4">
+          <main className="flex-grow container mx-auto p-6 z-10">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<Services />} />
