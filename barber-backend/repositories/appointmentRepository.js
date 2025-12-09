@@ -20,6 +20,20 @@ export class AppointmentRepository {
     });
   }
 
+  // Method to find all active appointments for conflict checking
+  async findActiveAppointments() {
+    return this.prisma.appointment.findMany({
+      where: {
+        status: {
+          not: 'CANCELLED' // Ignore cancelled appointments, they don't block slots
+        }
+      },
+      include: { 
+        service: true // We need the service details to know the DURATION of existing appointments
+      }, 
+    });
+  }
+
   async getById(id) {
     return this.prisma.appointment.findUnique({
       where: { id },
