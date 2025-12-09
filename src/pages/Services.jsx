@@ -59,8 +59,48 @@ function Services() {
           {services.map((s) => (
             <div
               key={s.id}
-              className="bg-white shadow-lg rounded-xl p-6 flex flex-col justify-between h-full border border-gray-100 hover:shadow-2xl transition"
+              className="group relative bg-[#1A1B26] rounded-2xl p-6 border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1"
             >
+              {/* Absolute glow effect behind the card */}
+              <div className="absolute inset-0 bg-violet-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-2xl font-bold text-white group-hover:text-violet-300 transition-colors">{s.name}</h3>
+                    <span className="bg-violet-500/10 text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-500/20">
+                      {s.durationMin} min
+                    </span>
+                </div>
+                
+                <p className="text-gray-400 mb-6 text-sm">Experience our premium {s.name} service designed for your style.</p>
+                
+                <div className="flex items-end justify-between mt-auto">
+                    <p className="text-3xl font-bold text-white">€{(s.priceCents / 100).toFixed(2)}</p>
+                    
+                    {/* Action Button */}
+                    {user && user.role === "ADMIN" ? (
+                      <div className="flex gap-2">
+                          <Link to={`/services/edit/${s.id}`} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-lg transition"><FiEdit /></Link>
+                          <button onClick={() => handleDelete(s.id)} className="p-2 text-red-400 hover:text-red-300 bg-red-500/10 rounded-lg transition"><FiTrash /></button>
+                      </div>
+                    ) : (
+                      <Link
+                          to={user ? `/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}` : `/login?redirect=/services`}
+                          className="bg-white text-black hover:bg-violet-400 hover:text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-white/5"
+                      >
+                          {user ? "Book Now" : "Login to Book"}
+                      </Link>
+                    )}
+                </div>
+            </div>
+
+
+
+
+
+
+
+              {/* OLD DESIGN
               <h3 className="min-h-[60px] text-xl font-bold mb-8 text-gray-800">{s.name}</h3>
               <p className="text-gray-600"><span className='font-semibold'>Duration:</span> {s.durationMin} min</p>
               <p className="text-gray-700 mt-2"><span className='font-semibold'>Price:</span> €{(s.priceCents / 100).toFixed(2)}</p>
@@ -82,7 +122,7 @@ function Services() {
                 </div>
               ) : user ? (
                 <div className="mt-8">
-                  {/* added service name so it stays there when redirecting to appointments */}
+                  {/* added service name so it stays there when redirecting to appointments */}{/*
                   <Link
                     to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
                     className="flex justify-center items-center gap-2 bg-violet-800 text-white px-4 py-2 rounded-lg hover:bg-violet-900 transition"
@@ -93,6 +133,7 @@ function Services() {
               ) : (
                 <div className="mt-8 text-center">
                   {/* if we want to redirect to service clicked do: to={`/login?redirect=/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}*/}
+                  {/*
                   <Link
                     to={`/login?redirect=/services`}
                     className="flex justify-center items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
@@ -100,7 +141,7 @@ function Services() {
                     Login for more Info <CiLogin />
                   </Link>
                 </div>
-              )}
+              )}*/}
             </div>
           ))}
         </div>

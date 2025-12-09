@@ -8,7 +8,7 @@ import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdEvent } from "react-icons/md";
 import { GiConfirmed } from "react-icons/gi";
 import { IoAddCircle } from "react-icons/io5";
 
@@ -81,108 +81,112 @@ function Appointments() {
 
   // Render
   return (
-    <div className="max-w-5xl mx-auto mt-10">
-      <h1 className="text-3xl font-bold mb-6 text-center text-white">
-        Appointments
+    <div className="max-w-5xl mx-auto mt-8">
+      <h1 className="text-4xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
+        Manage Appointments
       </h1>
 
       {!isAdmin() && (
-        <div className="bg-white shadow-md rounded-xl p-6 mb-8">
-          <h3 className="font-semibold text-xl mb-4 text-gray-700">
-            Book an Appointment
+        <div className="bg-[#1A1B26]/80 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl p-8 mb-10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+          
+          <h3 className="font-bold text-2xl mb-6 text-white flex items-center gap-2">
+            <MdEvent className="text-violet-400" /> Book an Appointment
           </h3>
 
-          <div className="flex flex-wrap gap-3">
-            <select
-              id="service-select"
-              className="border rounded-lg p-2 flex-1 min-w-[150px]"
-              value={selectedService} // controlled value
-              onChange={(e) => setSelectedService(e.target.value)} // update state on change
-            >
-              <option value="">
-                {selectedService ? "Select service" : "Select service"}
-              </option>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="w-full">
+                <label className="block text-gray-400 text-sm mb-2">Service</label>
+                <select
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
+                  value={selectedService}
+                  onChange={(e) => setSelectedService(e.target.value)}
+                >
+                  <option value="" className="bg-gray-900">Select a service...</option>
+                  {services.map((s) => (
+                    <option key={s.id} value={String(s.id)} className="bg-gray-900">
+                      {s.name} ({s.durationMin} min)
+                    </option>
+                  ))}
+                </select>
+            </div>
 
-              {services.map((s) => (
-                <option key={s.id} value={String(s.id)}>
-                  {s.name} ({s.durationMin} min)
-                </option>
-              ))}
-            </select>
-
-            <input
-              id="start-input"
-              type="datetime-local"
-              className="border rounded-lg p-2 flex-1 min-w-[180px]"
-            />
+            <div className="w-full">
+                <label className="block text-gray-400 text-sm mb-2">Date & Time</label>
+                <input
+                  id="start-input"
+                  type="datetime-local"
+                  className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors [color-scheme:dark]"
+                />
+            </div>
 
             <button
-              className="flex justify-center items-center gap-2 bg-violet-800 hover:bg-violet-900 text-white px-4 py-2 rounded-lg transition cursor-pointer"
+              className="w-full flex justify-center items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-violet-900/20 active:scale-95"
               onClick={() => {
-                const serviceId = Number(selectedService); // controlled state value
+                const serviceId = Number(selectedService);
                 const startInput = document.getElementById("start-input").value;
                 const startAt = startInput ? new Date(startInput).toISOString() : null;
-
                 if (!serviceId || !startAt) return toast.error("Please choose a service and time.");
                 book(serviceId, startAt);
               }}
             >
-              Book <IoAddCircle />
+              Book Now <IoAddCircle className="text-xl"/>
             </button>
           </div>
         </div>
       )}
 
       {appointments.length === 0 ? (
-        <p className="text-center text-gray-500">No appointments yet.</p>
+        <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/5">
+            <p className="text-gray-400 text-lg">No appointments found.</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {appointments.map((a) => (
             <div
               key={a.id}
-              className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition"
+              className="bg-[#13141c] border border-white/5 rounded-xl p-5 shadow-lg hover:border-violet-500/30 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
             >
-              <div className="flex justify-between items-center flex-wrap gap-2">
-                <div>
-                  <div className="text-lg font-semibold text-gray-800 mb-4">
-                    {a.service?.name}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {new Date(a.startAt).toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-700 mt-4">
-                    Status:{" "}
-                    <span
-                      className={`font-semibold ${
+              <div>
+                <div className="text-xl font-bold text-white mb-1 flex items-center gap-3">
+                  {a.service?.name}
+                  <span
+                      className={`text-xs px-2 py-0.5 rounded-full border ${
                         a.status === "CONFIRMED"
-                          ? "text-green-600"
+                          ? "bg-green-500/10 text-green-400 border-green-500/20"
                           : a.status === "CANCELLED"
-                          ? "text-red-600"
-                          : "text-yellow-600"
+                          ? "bg-red-500/10 text-red-400 border-red-500/20"
+                          : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
                       }`}
                     >
                       {a.status}
                     </span>
-                  </div>
                 </div>
-                    
-                {isAdmin() && (
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={() => changeStatus(a.id, "CONFIRMED")}
-                      className="flex justify-center items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md"
-                    >
-                      Confirm <GiConfirmed />
-                    </button>
-                    <button
-                      onClick={() => changeStatus(a.id, "CANCELLED")}
-                      className="flex justify-center items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                    >
-                      Cancel <MdCancel />
-                    </button>
-                  </div>
-                )}
+                <div className="text-gray-400 text-sm">
+                  {new Date(a.startAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                </div>
               </div>
+                  
+              {isAdmin() && (
+                <div className="flex gap-3 w-full md:w-auto">
+                  {a.status !== "CONFIRMED" && (
+                      <button
+                        onClick={() => changeStatus(a.id, "CONFIRMED")}
+                        className="flex-1 md:flex-none flex justify-center items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 px-4 py-2 rounded-lg transition"
+                      >
+                        Confirm <GiConfirmed />
+                      </button>
+                  )}
+                  {a.status !== "CANCELLED" && (
+                      <button
+                        onClick={() => changeStatus(a.id, "CANCELLED")}
+                        className="flex-1 md:flex-none flex justify-center items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg transition"
+                      >
+                        Cancel <MdCancel />
+                      </button>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

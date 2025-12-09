@@ -34,7 +34,7 @@ function Navbar() {
       className="sticky top-4 z-50 mx-4 md:mx-auto max-w-6xl rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/20"
     >
       <div className="flex justify-between items-center px-6 py-4">
-        <Link to="/" className="text-2xl font-extrabold tracking-tighter flex items-center gap-2">
+        <Link to="/" className="text-2xl font-extrabold tracking-tighter flex items-center gap-1 pr-20">
           <span className="text-3xl">💈</span> 
           <span className='bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent'>Barber VT</span>
         </Link>

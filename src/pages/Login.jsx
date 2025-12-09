@@ -31,9 +31,14 @@ function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-12 text-center text-gray-800">
+    // Outer container
+    <div className="flex justify-center items-center min-h-[80vh]">
+      {/* Card Container - Dark Glass */}
+      <div className="bg-[#13141c] border border-white/10 shadow-2xl shadow-black/50 rounded-3xl p-8 w-full max-w-md relative overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-violet-600/20 blur-[100px] pointer-events-none rounded-full"></div>
+        
+        <h2 className="text-3xl font-bold mb-8 text-center text-white relative z-10">
           Welcome Back
         </h2>
 
@@ -43,30 +48,36 @@ function Login() {
           </div>
         )}
 
-        <form onSubmit={submit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300 outline-none"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300 outline-none"
-            required
-          />
+        <form onSubmit={submit} className="space-y-5 relative z-10">
+          <div>
+            <label className="text-gray-400 text-sm ml-1 mb-1 block">Email Address</label>
+            <input
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="text-gray-400 text-sm ml-1 mb-1 block">Password</label>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              required
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-semibold py-2 rounded-lg transition cursor-pointer ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-violet-800 hover:bg-violet-900"
+            className={`w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-violet-900/20 transition-all transform active:scale-95 ${
+              loading ? "bg-gray-600 cursor-not-allowed" : "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
             }`}
           >
             {loading ? "Logging in..." : "Login"}

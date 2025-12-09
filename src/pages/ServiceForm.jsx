@@ -50,49 +50,60 @@ function ServiceForm() {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-600 mt-10">Loading...</p>;
+  if (loading) return <div className="text-center text-white mt-20 text-lg animate-pulse">Loading service data...</div>;
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-gray-800 shadow-xl rounded-2xl p-6">
-      <h2 className="text-2xl text-white font-semibold mb-4 text-center">
+    <div className="max-w-lg mx-auto mt-16 bg-[#13141c] border border-white/10 shadow-2xl rounded-3xl p-8 relative">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-t-3xl"></div>
+      
+      <h2 className="text-3xl text-white font-bold mb-8 text-center">
         {id ? "Edit Service" : "Add New Service"}
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4 px-2">
+
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-white text-xl font-medium mb-1">Name</label>
+          <label className="block text-gray-400 text-sm mb-2 font-medium">Service Name</label>
           <input
             name="name"
             value={form.name}
             onChange={handleChange}
             required
-            className="border border-gray-300 bg-white text-gray-800 rounded w-full px-3 py-2"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
+            placeholder="Haircut & Beard Trim"
           />
         </div>
-        <div>
-          <label className="block text-white text-xl font-medium mb-1">Duration (minutes)</label>
-          <input
-            name="durationMin"
-            type="number"
-            value={form.durationMin}
-            onChange={handleChange}
-            required
-            className="border bg-white border-gray-300 text-gray-800 rounded w-full px-3 py-2"
-          />
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-gray-400 text-sm mb-2 font-medium">Duration (min)</label>
+            <input
+              name="durationMin"
+              type="number"
+              value={form.durationMin}
+              onChange={handleChange}
+              required
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
+                placeholder="30"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-gray-400 text-sm mb-2 font-medium">Price (€)</label>
+            <input
+              name="priceCents"
+              type="number"
+              value={form.priceCents}
+              onChange={handleChange}
+              required
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
+                placeholder="2500"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-white text-xl font-medium mb-1">Price (€)</label>
-          <input
-            name="priceCents"
-            type="number"
-            value={form.priceCents}
-            onChange={handleChange}
-            required
-            className="border border-gray-300 bg-white text-gray-800 rounded w-full px-3 py-2"
-          />
-        </div>
+
         <button
           type="submit"
-          className="mt-4 mb-4 bg-violet-800 hover:bg-violet-900 cursor-pointer text-white px-4 py-2 rounded w-full font-semibold"
+          className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-violet-900/20 active:scale-95"
         >
           {id ? "Update Service" : "Create Service"}
         </button>
