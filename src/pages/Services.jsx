@@ -67,7 +67,7 @@ function Services() {
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-4">
                     <h3 className="text-2xl font-bold text-white group-hover:text-violet-300 transition-colors">{s.name}</h3>
-                    <span className="bg-violet-500/10 text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-500/20">
+                    <span className="text-center bg-violet-500/10 text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-500/20">
                       {s.durationMin} min
                     </span>
                 </div>
@@ -93,55 +93,6 @@ function Services() {
                     )}
                 </div>
             </div>
-
-
-
-
-
-
-
-              {/* OLD DESIGN
-              <h3 className="min-h-[60px] text-xl font-bold mb-8 text-gray-800">{s.name}</h3>
-              <p className="text-gray-600"><span className='font-semibold'>Duration:</span> {s.durationMin} min</p>
-              <p className="text-gray-700 mt-2"><span className='font-semibold'>Price:</span> €{(s.priceCents / 100).toFixed(2)}</p>
-
-              {user && user.role === "ADMIN" ? (
-                <div className="flex justify-between mt-8">
-                  <Link
-                    to={`/services/edit/${s.id}`}
-                    className="flex justify-center items-center gap-2 text-violet-800 hover:text-violet-900 font-medium cursor-pointer"
-                  >
-                    Edit <FiEdit />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(s.id)}
-                    className="flex justify-center items-center gap-2 text-red-600 hover:text-red-700 font-medium cursor-pointer"
-                  >
-                    Delete <FiTrash />
-                  </button>
-                </div>
-              ) : user ? (
-                <div className="mt-8">
-                  {/* added service name so it stays there when redirecting to appointments */}{/*
-                  <Link
-                    to={`/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}
-                    className="flex justify-center items-center gap-2 bg-violet-800 text-white px-4 py-2 rounded-lg hover:bg-violet-900 transition"
-                  >
-                    Book Now <MdOutlineArrowOutward />
-                  </Link>
-                </div>
-              ) : (
-                <div className="mt-8 text-center">
-                  {/* if we want to redirect to service clicked do: to={`/login?redirect=/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}`}*/}
-                  {/*
-                  <Link
-                    to={`/login?redirect=/services`}
-                    className="flex justify-center items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition"
-                  >
-                    Login for more Info <CiLogin />
-                  </Link>
-                </div>
-              )}*/}
             </div>
           ))}
         </div>
