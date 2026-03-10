@@ -6,28 +6,33 @@ admin buttons change status.
 import React, { useEffect, useState, useContext } from 'react';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { MdCancel, MdEvent } from "react-icons/md";
+import { MdCancel, MdEvent, MdSwapVert, MdLockOutline } from "react-icons/md";
 import { GiConfirmed } from "react-icons/gi";
 import { IoAddCircle } from "react-icons/io5";
 
 // doesn't load, error
 function Appointments() {
-  const { user, isAdmin } = useContext(AuthContext); // eslint-disable-line no-unused-vars
+  const { user, isAdmin } = useContext(AuthContext);
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
 
-  // FIRST define URL params
+  // State to track sorting order (desc = newest first, asc = oldest first)
+  const [sortOrder, setSortOrder] = useState("desc");
+
+  // define URL params
   const [params] = useSearchParams();
   const selectedServiceId = params.get("serviceId");
-  const selectedServiceName = params.get("serviceName"); // eslint-disable-line no-unused-vars
 
-  // THEN define the selectedService state using the param (if any)
+  // define the selectedService state using the param (if any)
   const [selectedService, setSelectedService] = useState(selectedServiceId || "");
 
   // Fetch all appointments and services on page load
   useEffect(() => {
+    // If no user, do not attempt to fetch data
+    if (!user) return;
+
     const load = async () => {
       try {
         const [a, s] = await Promise.all([
@@ -51,7 +56,7 @@ function Appointments() {
       }
     };
     load();
-  }, [selectedServiceId]);
+  }, [selectedServiceId, user]);
 
   // Book new appointment
   const book = async (serviceId, startAt) => {
@@ -79,7 +84,42 @@ function Appointments() {
     }
   };
 
-  // Render
+  // unauthorized users, tell them to log in
+  if (!user) {
+    return (
+      <div className="max-w-3xl mx-auto mt-20 px-4">
+        <div className="bg-[#13141c] border border-white/10 shadow-2xl shadow-black/50 rounded-3xl p-12 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-violet-600/20 blur-[100px] pointer-events-none rounded-full"></div>
+          
+          <div className="flex justify-center mb-6 relative z-10">
+            <div className="bg-white/5 p-4 rounded-full border border-white/10">
+              <MdLockOutline className="text-5xl text-violet-400" />
+            </div>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-white mb-4 relative z-10">Access Restricted</h2>
+          <p className="text-gray-400 mb-8 text-lg relative z-10">
+            You need to be logged in to view and book your appointments.
+          </p>
+          
+          <Link 
+            to="/login?redirect=/appointments" 
+            className="inline-block bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-violet-900/20 active:scale-95 relative z-10"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Sort the appointments array based on startAt date before rendering
+  const sortedAppointments = [...appointments].sort((a, b) => {
+    const dateA = new Date(a.startAt).getTime();
+    const dateB = new Date(b.startAt).getTime();
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
+
   return (
     <div className="max-w-5xl mx-auto mt-8">
       <h1 className="text-4xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
@@ -136,13 +176,29 @@ function Appointments() {
         </div>
       )}
 
+      {/* Sorting header section */}
+      <div className="flex justify-between items-center mb-4 px-2">
+        <h3 className="text-xl font-bold text-white">
+          {isAdmin() ? "All Appointments" : "Your Appointments"}
+        </h3>
+        {appointments.length > 0 && (
+          <button
+            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+            className="flex items-center gap-2 text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 px-4 py-2 rounded-lg transition-colors"
+          >
+            <MdSwapVert className="text-lg" />
+            {sortOrder === "desc" ? "Newest First" : "Oldest First"}
+          </button>
+        )}
+      </div>
+
       {appointments.length === 0 ? (
         <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/5">
             <p className="text-gray-400 text-lg">No appointments found.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {appointments.map((a) => (
+          {sortedAppointments.map((a) => (
             <div
               key={a.id}
               className="bg-[#13141c] border border-white/5 rounded-xl p-5 shadow-lg hover:border-violet-500/30 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4"

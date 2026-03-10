@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -36,7 +35,7 @@ function Navbar() {
       <div className="flex justify-between items-center px-6 py-4">
         <Link to="/" className="text-2xl font-extrabold tracking-tighter flex items-center gap-1 pr-20">
           <span className="text-3xl">💈</span> 
-          <span className='bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent'>Barber VT</span>
+          <span className='bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent'>BarberVT</span>
         </Link>
 
         {/* Hamburger */}
@@ -50,7 +49,7 @@ function Navbar() {
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6">
           <NavLink to="/services">Services</NavLink>
-          {user && <NavLink to="/appointments">Appointments</NavLink>}
+          <NavLink to="/appointments">Appointments</NavLink>
           
           <div className="h-6 w-px bg-white/10 mx-2"></div> {/* Separator */}
 
@@ -77,7 +76,7 @@ function Navbar() {
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="md:hidden border-t border-white/10 bg-black/90 rounded-b-2xl overflow-hidden">
             <div className="flex flex-col p-6 gap-4">
                 <Link to="/services" className="text-gray-300 py-2">Services</Link>
-                {user && <Link to="/appointments" className="text-gray-300 py-2">Appointments</Link>}
+                <Link to="/appointments" className="text-gray-300 py-2">Appointments</Link>
                 {!user ? (
                     <>
                         <Link to="/login" className="text-gray-300 py-2">Login</Link>
