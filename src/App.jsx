@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from "./pages/Login";
 import Register from './pages/Register';
@@ -47,6 +47,17 @@ function App() {
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+            
+              <Route path="*" element={
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-fuchsia-500 mb-4">404</h1>
+                  <h2 className="text-2xl font-bold text-white mb-2">Page Not Found</h2>
+                  <p className="text-gray-400 mb-8">The page you're looking for doesn't exist or has been moved.</p>
+                  <Link to="/" className="bg-white/10 hover:bg-white/20 border border-white/10 text-white px-6 py-3 rounded-xl transition-all">
+                    Return Home
+                  </Link>
+                </div>
+              } />
             </Routes>
           </main>
 

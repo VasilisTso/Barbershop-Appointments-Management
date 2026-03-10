@@ -28,12 +28,16 @@ function Appointments() {
   // define the selectedService state using the param (if any)
   const [selectedService, setSelectedService] = useState(selectedServiceId || "");
 
+  const [isLoading, setIsLoading] = useState(true);
+
   // Fetch all appointments and services on page load
   useEffect(() => {
     // If no user, do not attempt to fetch data
     if (!user) return;
 
     const load = async () => {
+      setIsLoading(true);
+
       try {
         const [a, s] = await Promise.all([
           api.get("/appointments"),
@@ -53,6 +57,8 @@ function Appointments() {
       } catch (err) {
         console.error(err);
         toast.error("Failed to load data");
+      } finally {
+        setIsLoading(false); 
       }
     };
     load();
@@ -192,7 +198,11 @@ function Appointments() {
         )}
       </div>
 
-      {appointments.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-12">
+          <div className="w-10 h-10 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+        </div>
+      ) : appointments.length === 0 ? (
         <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/5">
             <p className="text-gray-400 text-lg">No appointments found.</p>
         </div>
