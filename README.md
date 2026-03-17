@@ -3,7 +3,6 @@
 A full-stack CRUD web application for managing **barbershop services and appointments**.  
 Built as a **university project**, it demonstrates modern web app design — authentication, service management, scheduling, and testing — using a clean architecture and dependency injection.
 
----
 
 ## Project Summary
 
@@ -19,7 +18,6 @@ Both backend and frontend are fully implemented:
 - **Validation:** Express-Validator  
 - **Testing:** Jest (integration tests) + Postman API collection  
 
----
 
 ## Tech Stack
 
@@ -28,7 +26,6 @@ Both backend and frontend are fully implemented:
 **Database** -> SQLite
 **Testing** -> Jest (Integration) & Postman (E2E) |
 
----
 
 ## Project Structure
 
@@ -56,7 +53,6 @@ src/
 - App.jsx, main.jsx # Router + layout
 - index.css # TailwindCSS
 
----
 
 ## How to Run the Project
 
@@ -65,12 +61,6 @@ src/
 cd barber-backend
 
 npm install
-
-.env file {
-    DATABASE_URL="file:./dev.db"
-    JWT_SECRET="your_secret_key"
-    PORT=4000
-}
 
 npx prisma migrate dev
 
