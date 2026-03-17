@@ -21,10 +21,10 @@ Both backend and frontend are fully implemented:
 
 ## Tech Stack
 
-**Frontend** -> React (Vite), React Router, Axios, TailwindCSS, Framer Motion 
-**Backend** -> Node.js, Express.js, Awilix (DI), Prisma ORM 
-**Database** -> SQLite
-**Testing** -> Jest (Integration) & Postman (E2E) |
+**Frontend**: React (Vite), React Router, Axios, TailwindCSS, Framer Motion 
+**Backend**: Node.js, Express.js, Awilix (DI), Prisma ORM 
+**Database**: SQLite
+**Testing**: Jest (Integration) & Postman (E2E) |
 
 
 ## Project Structure
