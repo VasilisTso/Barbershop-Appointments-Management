@@ -2,10 +2,12 @@ import request from "supertest";
 import app from "../app.js";
 import { prisma } from "../prismaClient.js";
 
+// SETUP connect to the test database
 beforeAll(async () => {
     await prisma.$connect();
 });
 
+// TEARDOWN After all tests finish, disconnect so the process can exit cleanly
 afterAll(async () => {
     await prisma.$disconnect();
 });
