@@ -1,35 +1,93 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
+/* Design tokens — editorial barbershop. Light theme only. */
+@theme {
+  --color-paper: #F4EFE6;
+  --color-paper-deep: #EAE3D6;
+  --color-ink: #1A1714;
+  --color-muted: #6B635A;
+  --color-hairline: #D9D1C4;
+  --color-accent: #7A2E24;
+  --color-brass: #B08D57;
+
+  --color-sage: #3F5A3A;
+  --color-sage-wash: #E1E6D9;
+  --color-ochre: #7A5714;
+  --color-ochre-wash: #F0E4C6;
+  --color-brick: #8E3B2F;
+  --color-brick-wash: #F1DDD6;
+  --color-brick-on-ink: #E07A6A;
+
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body {
-  font-family: "Outfit", sans-serif;
-  /* Deep dark luxury background */
-  overflow-x: hidden;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "tnum";
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Oxblood ring disappears on the ink footer; brass keeps 3:1+ there. */
+  footer :focus-visible {
+    outline-color: var(--color-brass);
+  }
+
+  input, select, textarea {
+    caret-color: var(--color-accent);
+    accent-color: var(--color-accent);
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+    scrollbar-color: var(--color-muted) var(--color-paper-deep);
+  }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
-::-webkit-scrollbar-track {
-  background: #0f0224;
-}
-::-webkit-scrollbar-thumb {
-  background: #4c1d95;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #6d28d9;
-}
-
-/* Remove blue highlight on mobile */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.container { max-width: 1200px; }

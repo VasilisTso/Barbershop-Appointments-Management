@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T00:00:00Z",
+  "title": "Design System: Barbershop VT",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#F4EFE6",
+        "oklch": "oklch(95.4% 0.013 82)",
+        "tonalRamp": [
+          "oklch(15% 0.006 82)",
+          "oklch(26% 0.008 82)",
+          "oklch(38% 0.010 82)",
+          "oklch(49% 0.012 82)",
+          "oklch(61% 0.012 82)",
+          "oklch(72% 0.010 82)",
+          "oklch(84% 0.008 82)",
+          "oklch(95% 0.006 82)"
+        ]
+      },
+      "paper-deep": {
+        "role": "neutral",
+        "displayName": "Deep Paper",
+        "canonical": "#EAE3D6",
+        "oklch": "oklch(91.8% 0.019 83)",
+        "tonalRamp": [
+          "oklch(15% 0.009 83)",
+          "oklch(26% 0.012 83)",
+          "oklch(38% 0.015 83)",
+          "oklch(49% 0.018 83)",
+          "oklch(61% 0.018 83)",
+          "oklch(72% 0.015 83)",
+          "oklch(84% 0.012 83)",
+          "oklch(95% 0.009 83)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1A1714",
+        "oklch": "oklch(20.7% 0.008 67)",
+        "tonalRamp": [
+          "oklch(15% 0.004 67)",
+          "oklch(26% 0.005 67)",
+          "oklch(38% 0.006 67)",
+          "oklch(49% 0.007 67)",
+          "oklch(61% 0.007 67)",
+          "oklch(72% 0.006 67)",
+          "oklch(84% 0.005 67)",
+          "oklch(95% 0.004 67)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#6B635A",
+        "oklch": "oklch(50.4% 0.017 71)",
+        "tonalRamp": [
+          "oklch(15% 0.008 71)",
+          "oklch(26% 0.011 71)",
+          "oklch(38% 0.014 71)",
+          "oklch(49% 0.016 71)",
+          "oklch(61% 0.016 71)",
+          "oklch(72% 0.014 71)",
+          "oklch(84% 0.011 71)",
+          "oklch(95% 0.008 71)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#D9D1C4",
+        "oklch": "oklch(86.4% 0.020 80)",
+        "tonalRamp": [
+          "oklch(15% 0.010 80)",
+          "oklch(26% 0.013 80)",
+          "oklch(38% 0.015 80)",
+          "oklch(49% 0.018 80)",
+          "oklch(61% 0.018 80)",
+          "oklch(72% 0.015 80)",
+          "oklch(84% 0.013 80)",
+          "oklch(95% 0.010 80)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Oxblood",
+        "canonical": "#7A2E24",
+        "oklch": "oklch(40.9% 0.108 30)",
+        "tonalRamp": [
+          "oklch(15% 0.053 30)",
+          "oklch(26% 0.069 30)",
+          "oklch(38% 0.085 30)",
+          "oklch(49% 0.101 30)",
+          "oklch(61% 0.101 30)",
+          "oklch(72% 0.085 30)",
+          "oklch(84% 0.069 30)",
+          "oklch(95% 0.053 30)"
+        ]
+      },
+      "brass": {
+        "role": "secondary",
+        "displayName": "Brass",
+        "canonical": "#B08D57",
+        "oklch": "oklch(66.4% 0.083 77)",
+        "tonalRamp": [
+          "oklch(15% 0.041 77)",
+          "oklch(26% 0.053 77)",
+          "oklch(38% 0.065 77)",
+          "oklch(49% 0.077 77)",
+          "oklch(61% 0.077 77)",
+          "oklch(72% 0.065 77)",
+          "oklch(84% 0.053 77)",
+          "oklch(95% 0.041 77)"
+        ]
+      },
+      "sage": {
+        "role": "tertiary",
+        "displayName": "Sage",
+        "canonical": "#3F5A3A",
+        "oklch": "oklch(43.7% 0.061 141)",
+        "tonalRamp": [
+          "oklch(15% 0.030 141)",
+          "oklch(26% 0.039 141)",
+          "oklch(38% 0.047 141)",
+          "oklch(49% 0.056 141)",
+          "oklch(61% 0.056 141)",
+          "oklch(72% 0.047 141)",
+          "oklch(84% 0.039 141)",
+          "oklch(95% 0.030 141)"
+        ]
+      },
+      "sage-wash": {
+        "role": "tertiary",
+        "displayName": "Sage Wash",
+        "canonical": "#E1E6D9",
+        "oklch": "oklch(91.8% 0.018 124)",
+        "tonalRamp": [
+          "oklch(15% 0.009 124)",
+          "oklch(26% 0.012 124)",
+          "oklch(38% 0.014 124)",
+          "oklch(49% 0.017 124)",
+          "oklch(61% 0.017 124)",
+          "oklch(72% 0.014 124)",
+          "oklch(84% 0.012 124)",
+          "oklch(95% 0.009 124)"
+        ]
+      },
+      "ochre": {
+        "role": "tertiary",
+        "displayName": "Ochre",
+        "canonical": "#7A5714",
+        "oklch": "oklch(48.2% 0.092 79)",
+        "tonalRamp": [
+          "oklch(15% 0.045 79)",
+          "oklch(26% 0.058 79)",
+          "oklch(38% 0.072 79)",
+          "oklch(49% 0.085 79)",
+          "oklch(61% 0.085 79)",
+          "oklch(72% 0.072 79)",
+          "oklch(84% 0.058 79)",
+          "oklch(95% 0.045 79)"
+        ]
+      },
+      "ochre-wash": {
+        "role": "tertiary",
+        "displayName": "Ochre Wash",
+        "canonical": "#F0E4C6",
+        "oklch": "oklch(92.1% 0.042 89)",
+        "tonalRamp": [
+          "oklch(15% 0.020 89)",
+          "oklch(26% 0.027 89)",
+          "oklch(38% 0.033 89)",
+          "oklch(49% 0.039 89)",
+          "oklch(61% 0.039 89)",
+          "oklch(72% 0.033 89)",
+          "oklch(84% 0.027 89)",
+          "oklch(95% 0.020 89)"
+        ]
+      },
+      "brick": {
+        "role": "tertiary",
+        "displayName": "Brick",
+        "canonical": "#8E3B2F",
+        "oklch": "oklch(46.3% 0.116 30)",
+        "tonalRamp": [
+          "oklch(15% 0.057 30)",
+          "oklch(26% 0.074 30)",
+          "oklch(38% 0.090 30)",
+          "oklch(49% 0.107 30)",
+          "oklch(61% 0.107 30)",
+          "oklch(72% 0.090 30)",
+          "oklch(84% 0.074 30)",
+          "oklch(95% 0.057 30)"
+        ]
+      },
+      "brick-wash": {
+        "role": "tertiary",
+        "displayName": "Brick Wash",
+        "canonical": "#F1DDD6",
+        "oklch": "oklch(91.2% 0.024 40)",
+        "tonalRamp": [
+          "oklch(15% 0.012 40)",
+          "oklch(26% 0.015 40)",
+          "oklch(38% 0.019 40)",
+          "oklch(49% 0.022 40)",
+          "oklch(61% 0.022 40)",
+          "oklch(72% 0.019 40)",
+          "oklch(84% 0.015 40)",
+          "oklch(95% 0.012 40)"
+        ]
+      },
+      "brick-on-ink": {
+        "role": "tertiary",
+        "displayName": "Brick on Ink",
+        "canonical": "#E07A6A",
+        "oklch": "oklch(69.0% 0.130 30)",
+        "tonalRamp": [
+          "oklch(15% 0.064 30)",
+          "oklch(26% 0.083 30)",
+          "oklch(38% 0.101 30)",
+          "oklch(49% 0.120 30)",
+          "oklch(61% 0.120 30)",
+          "oklch(72% 0.101 30)",
+          "oklch(84% 0.083 30)",
+          "oklch(95% 0.064 30)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home hero and auth titles."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Service names, appointment titles."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "Muted paragraph under a heading."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI copy, controls."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field labels and legends."
+      },
+      "caps": {
+        "displayName": "Caps",
+        "purpose": "Weekday/month on date blocks, Admin tag."
+      }
+    },
+    "shadows": [
+      {
+        "name": "toast-lift",
+        "value": "0 8px 24px -8px rgba(26, 23, 20, 0.35)",
+        "purpose": "Toast notifications only."
+      }
+    ],
+    "focus": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 2px",
+        "purpose": "Global keyboard focus on paper."
+      },
+      {
+        "name": "focus-ring-on-ink",
+        "value": "outline-color: var(--color-brass)",
+        "purpose": "Focus inside the ink footer."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The single easing for transitions and reveals."
+      },
+      {
+        "name": "reveal",
+        "value": "opacity 0→1, translateY 16px→0, 700ms ease-out-expo, once in view",
+        "purpose": "Section entry."
+      },
+      {
+        "name": "hero-stagger",
+        "value": "900ms per line, 120ms stagger",
+        "purpose": "Home hero lines."
+      },
+      {
+        "name": "route-fade",
+        "value": "opacity + 8px rise, 350ms",
+        "purpose": "Route transitions."
+      },
+      {
+        "name": "control-transition",
+        "value": "200ms colour transition; active scale 0.98",
+        "purpose": "Buttons, fields, slots."
+      },
+      {
+        "name": "selection-spring",
+        "value": "spring stiffness 500-520, damping 40-42",
+        "purpose": "Nav underline and day pill."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all durations 0.01ms; framer motion disabled",
+        "purpose": "prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call to action: book, save, create account.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Book an appointment</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans);font-weight:500;letter-spacing:-0.005em;border-radius:4px;height:44px;padding:0 20px;font-size:15px;border:1px solid transparent;cursor:pointer;transition:background-color .2s cubic-bezier(0.16,1,0.3,1),color .2s cubic-bezier(0.16,1,0.3,1),border-color .2s cubic-bezier(0.16,1,0.3,1),transform .2s cubic-bezier(0.16,1,0.3,1);} .ds-btn:active{transform:scale(0.98);} .ds-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;} .ds-btn-primary{background:var(--color-ink);color:var(--color-paper);} .ds-btn-primary:hover{background:var(--color-accent);}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined companion action beside a primary.",
+      "html": "<button class=\"ds-btn ds-btn-secondary\">See the price list</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans);font-weight:500;letter-spacing:-0.005em;border-radius:4px;height:44px;padding:0 20px;font-size:15px;border:1px solid transparent;cursor:pointer;transition:background-color .2s cubic-bezier(0.16,1,0.3,1),color .2s cubic-bezier(0.16,1,0.3,1),border-color .2s cubic-bezier(0.16,1,0.3,1),transform .2s cubic-bezier(0.16,1,0.3,1);} .ds-btn:active{transform:scale(0.98);} .ds-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;} .ds-btn-secondary{background:transparent;color:var(--color-ink);border-color:var(--color-ink);} .ds-btn-secondary:hover{background:var(--color-ink);color:var(--color-paper);}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Low-stakes action, nav log in / log out.",
+      "html": "<button class=\"ds-btn ds-btn-ghost\">Log in</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans);font-weight:500;letter-spacing:-0.005em;border-radius:4px;height:44px;padding:0 20px;font-size:15px;border:1px solid transparent;cursor:pointer;transition:background-color .2s cubic-bezier(0.16,1,0.3,1),color .2s cubic-bezier(0.16,1,0.3,1),border-color .2s cubic-bezier(0.16,1,0.3,1),transform .2s cubic-bezier(0.16,1,0.3,1);} .ds-btn:active{transform:scale(0.98);} .ds-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;} .ds-btn-ghost{background:transparent;color:var(--color-ink);height:36px;padding:0 14px;font-size:14px;} .ds-btn-ghost:hover{background:var(--color-paper-deep);}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Explicit cancel or delete.",
+      "html": "<button class=\"ds-btn ds-btn-danger\">Cancel</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-sans);font-weight:500;letter-spacing:-0.005em;border-radius:4px;height:44px;padding:0 20px;font-size:15px;border:1px solid transparent;cursor:pointer;transition:background-color .2s cubic-bezier(0.16,1,0.3,1),color .2s cubic-bezier(0.16,1,0.3,1),border-color .2s cubic-bezier(0.16,1,0.3,1),transform .2s cubic-bezier(0.16,1,0.3,1);} .ds-btn:active{transform:scale(0.98);} .ds-btn:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;} .ds-btn-danger{background:transparent;color:var(--color-brick);border-color:color-mix(in srgb,var(--color-brick) 40%,transparent);} .ds-btn-danger:hover{background:var(--color-brick);border-color:var(--color-brick);color:var(--color-paper);}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Label, 44px bordered input, hint below.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-label\" for=\"ds-email\">Email</label><input id=\"ds-email\" class=\"ds-input\" placeholder=\"you@example.com\"><p class=\"ds-hint\">We only use it to sign you in.</p></div>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font-family:var(--font-sans);max-width:320px;} .ds-label{font-size:14px;font-weight:500;color:var(--color-ink);} .ds-input{width:100%;height:44px;background:transparent;border:1px solid var(--color-muted);border-radius:4px;padding:0 14px;font-size:15px;color:var(--color-ink);caret-color:var(--color-accent);transition:border-color .2s;} .ds-input::placeholder{color:var(--color-muted);} .ds-input:hover,.ds-input:focus{border-color:var(--color-ink);outline:none;} .ds-input:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px;} .ds-hint{margin:0;font-size:14px;color:var(--color-muted);}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky paper bar, serif wordmark, sliding ink underline on the active link.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-wordmark\">Barbershop <em>VT</em></span><div class=\"ds-nav-links\"><a href=\"#\" class=\"ds-nav-link is-active\">Services</a><a href=\"#\" class=\"ds-nav-link\">Appointments</a></div></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 24px;background:var(--color-paper);border-bottom:1px solid var(--color-hairline);} .ds-wordmark{font-family:var(--font-display);font-size:1.65rem;line-height:1;letter-spacing:-0.01em;color:var(--color-ink);} .ds-wordmark em{color:var(--color-accent);} .ds-nav-links{display:flex;gap:32px;} .ds-nav-link{position:relative;padding:8px 0;font-family:var(--font-sans);font-size:15px;color:var(--color-muted);text-decoration:none;transition:color .2s;} .ds-nav-link:hover,.ds-nav-link.is-active{color:var(--color-ink);} .ds-nav-link.is-active::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--color-ink);} .ds-nav-link:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;border-radius:2px;}"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "status-confirmed",
+      "description": "Dot plus label, ink on wash per status.",
+      "html": "<span class=\"ds-badge ds-badge-pending\"><i></i>Pending</span> <span class=\"ds-badge ds-badge-confirmed\"><i></i>Confirmed</span> <span class=\"ds-badge ds-badge-cancelled\"><i></i>Cancelled</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:3px;font-family:var(--font-sans);font-size:12px;font-weight:500;} .ds-badge i{width:6px;height:6px;border-radius:50%;background:currentColor;} .ds-badge-pending{background:var(--color-ochre-wash);color:var(--color-ochre);} .ds-badge-confirmed{background:var(--color-sage-wash);color:var(--color-sage);} .ds-badge-cancelled{background:var(--color-brick-wash);color:var(--color-brick);}"
+    },
+    {
+      "name": "Price-list Row",
+      "kind": "custom",
+      "refersTo": "price-row",
+      "description": "Serif service name, dotted leader, duration and price in tabular figures.",
+      "html": "<div class=\"ds-row\"><h3 class=\"ds-row-name\">Classic cut</h3><span class=\"ds-row-leader\"></span><p class=\"ds-row-meta\"><span class=\"ds-row-dur\">45 min</span><span class=\"ds-row-price\">€25.00</span></p></div>",
+      "css": ".ds-row{display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--color-hairline);color:var(--color-ink);} .ds-row-name{margin:0;font-family:var(--font-display);font-weight:400;font-size:1.9rem;line-height:1.25;} .ds-row-leader{flex:1;min-width:32px;transform:translateY(-0.3em);border-bottom:1px dotted color-mix(in srgb,var(--color-muted) 50%,transparent);} .ds-row-meta{margin:0;display:flex;align-items:baseline;gap:12px;font-family:var(--font-sans);font-variant-numeric:tabular-nums;} .ds-row-dur{font-size:14px;color:var(--color-muted);} .ds-row-price{font-size:18px;font-weight:500;}"
+    },
+    {
+      "name": "Time Slot",
+      "kind": "custom",
+      "refersTo": "slot",
+      "description": "44px slot buttons; oxblood when selected.",
+      "html": "<div class=\"ds-slots\"><button class=\"ds-slot\">09:00</button><button class=\"ds-slot is-selected\" aria-pressed=\"true\">09:30</button><button class=\"ds-slot\" disabled>10:00</button></div>",
+      "css": ".ds-slots{display:grid;grid-template-columns:repeat(3,72px);gap:8px;} .ds-slot{height:44px;border-radius:4px;border:1px solid var(--color-hairline);background:transparent;color:var(--color-ink);font-family:var(--font-sans);font-size:15px;font-variant-numeric:tabular-nums;cursor:pointer;transition:border-color .2s,background-color .2s;} .ds-slot:hover{border-color:var(--color-ink);} .ds-slot:focus-visible{outline:2px solid var(--color-accent);outline-offset:3px;} .ds-slot.is-selected{background:var(--color-accent);border-color:var(--color-accent);color:var(--color-paper);} .ds-slot:disabled{border-color:transparent;color:color-mix(in srgb,var(--color-muted) 50%,transparent);cursor:not-allowed;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Chalked Price List",
+    "overview": "Barbershop VT reads like the printed card behind a good barber's chair: cream stock, near-black ink, an oxblood flourish, and prices set against dotted leaders. Every surface is flat paper divided by rules, never a floating panel. Large Instrument Serif headings carry the voice; Geist carries the work (forms, times, prices) with tabular numerals so columns of figures line up.\n\nDensity is relaxed on public pages (hero, price list, three-step explainer) and tighter on the booking and admin views, where the same rules, hairlines, and type roles organise slot grids and appointment rows. Motion is a quiet lift-and-fade on entry and a sliding underline or pill for selection, always with a long exponential ease-out and always switched off under reduced motion.\n\nThe world rejects the template it replaced: no navy-and-violet night theme, no gradient text, no glass, blur, or glow, no emoji as iconography. It is a light theme only.",
+    "keyCharacteristics": [
+      "Cream paper ground, ink type, a single oxblood accent; brass appears only on ink.",
+      "Instrument Serif display headings, often a roman line followed by an italic oxblood accent phrase.",
+      "Geist body with stylistic set 01 and tabular numerals globally.",
+      "Structure by rules: 1px hairlines between rows, 1px or 2px ink rules above sections and forms.",
+      "Flat surfaces; the only shadow belongs to the toast.",
+      "Tight 2-6px corners, never pills except the status dot."
+    ],
+    "rules": [
+      {
+        "name": "The One Voice Rule",
+        "body": "Oxblood is the only chromatic accent on paper. It marks selection, emphasis, and focus; it is never a background for large areas.",
+        "section": "colors"
+      },
+      {
+        "name": "The Brass Lives on Ink Rule",
+        "body": "Brass is a footer-and-toast colour. On the paper ground use oxblood or ink instead.",
+        "section": "colors"
+      },
+      {
+        "name": "The Wash Pair Rule",
+        "body": "Every status is an ink-on-wash pair (sage, ochre, brick, or muted on deep paper). Never a saturated fill with white text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Italic Turn Rule",
+        "body": "Display headings may pair a roman phrase with an italic oxblood phrase (\"A sharp cut, / *booked in a minute.*\", \"Welcome *back.*\", \"Take a *seat.*\"). One italic turn per heading, always at the end.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ledger Numerals Rule",
+        "body": "Geist runs with `ss01` and `tnum` on the body; anything that lines up (prices, durations, times, hours) also gets tabular numerals explicitly.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Kicker Rule",
+        "body": "Headings stand alone. No small uppercase label sits above a heading to introduce it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rule Not Shadow Rule",
+        "body": "Separate with a 1px hairline (rows), a 1px ink rule (sections, page header), or a 2px ink rule (form column, sticky booking bar). Never with a drop shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** set the page on paper (#F4EFE6) with ink text; this is a light-only system.",
+      "**Do** use Instrument Serif at weight 400 for every display heading, service name and big numeral, with negative tracking (-0.02em to -0.03em) and tight leading (0.92-0.95) at headline sizes.",
+      "**Do** let a display heading end in one italic oxblood phrase when it needs emphasis.",
+      "**Do** separate content with hairlines and ink rules, and use deep paper for recessed panels.",
+      "**Do** pair every status ink with its wash and keep the dot-plus-label badge.",
+      "**Do** keep the 2px oxblood focus ring (3px offset) on paper and switch it to brass on ink.",
+      "**Do** label demo shop facts (hours, address) as placeholders wherever they appear.",
+      "**Do** use outline icons from one family (Feather) inline at text size, `aria-hidden`."
+    ],
+    "donts": [
+      "**Don't** put a small uppercase eyebrow or kicker label above a heading.",
+      "**Don't** use gradient text, gradient fills, glass, backdrop blur, or glow.",
+      "**Don't** add drop shadows to cards, buttons or panels; the toast is the only lifted layer.",
+      "**Don't** use emoji as icons or as the logo.",
+      "**Don't** set brass text on paper, or brick on ink (use brick-on-ink there).",
+      "**Don't** introduce a dark theme or a second accent hue.",
+      "**Don't** round controls into pills; stay within 2-6px."
+    ]
+  }
+}

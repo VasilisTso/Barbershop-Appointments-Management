@@ -1,263 +1,447 @@
-/* 
-fetches appointments depending on role (backend returns user’s or all)
-shows list and allows booking
-admin buttons change status.
+/*
+Fetches appointments depending on role (backend returns the user's own, or all for admin).
+Users book through the slot picker (with an optional note) and can cancel their own upcoming bookings.
+Admins confirm or cancel upcoming bookings and mark past ones done.
 */
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import toast from 'react-hot-toast';
+import { FiCheck, FiX, FiLock, FiCheckCircle } from 'react-icons/fi';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { useSearchParams, Link } from "react-router-dom";
-import toast from "react-hot-toast";
-import { MdCancel, MdEvent, MdSwapVert, MdLockOutline } from "react-icons/md";
-import { GiConfirmed } from "react-icons/gi";
-import { IoAddCircle } from "react-icons/io5";
+import Button from '../components/ui/Button';
+import Field, { inputClass } from '../components/ui/Field';
+import PageHeader from '../components/ui/PageHeader';
+import Reveal from '../components/ui/Reveal';
+import Skeleton from '../components/ui/Skeleton';
+import StatusBadge from '../components/ui/StatusBadge';
+import SlotPicker from '../components/SlotPicker';
+import { formatDuration, formatPrice } from '../lib/shop';
+import { apiErrorMessage } from '../lib/apiError';
 
-// doesn't load, error
-function Appointments() {
-  const { user, isAdmin } = useContext(AuthContext);
-  const [appointments, setAppointments] = useState([]);
-  const [services, setServices] = useState([]);
+const ease = [0.16, 1, 0.3, 1];
+const summaryDateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+const timeFmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
+const monthFmt = new Intl.DateTimeFormat('en-GB', { month: 'short' });
+const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
+const NOTES_MAX = 500;
 
-  // State to track sorting order (desc = newest first, asc = oldest first)
-  const [sortOrder, setSortOrder] = useState("desc");
-
-  // define URL params
-  const [params] = useSearchParams();
-  const selectedServiceId = params.get("serviceId");
-
-  // define the selectedService state using the param (if any)
-  const [selectedService, setSelectedService] = useState(selectedServiceId || "");
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Fetch all appointments and services on page load
-  useEffect(() => {
-    // If no user, do not attempt to fetch data
-    if (!user) return;
-
-    const load = async () => {
-      setIsLoading(true);
-
-      try {
-        const [a, s] = await Promise.all([
-          api.get("/appointments"),
-          api.get("/services"),
-        ]);
-        setAppointments(a.data);
-        setServices(s.data);
-
-        // If user came via ?serviceId=..., and that id exists in loaded services,
-        // set it as the selectedService (controlled select will show correct option)
-        if (selectedServiceId) {
-          // ensure it's an existing id (optional safety)
-          const exists = s.data.some((svc) => String(svc.id) === String(selectedServiceId));
-          if (exists) setSelectedService(String(selectedServiceId));
-          else setSelectedService(""); // fallback if id not found
-        }
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load data");
-      } finally {
-        setIsLoading(false); 
-      }
-    };
-    load();
-  }, [selectedServiceId, user]);
-
-  // Book new appointment
-  const book = async (serviceId, startAt) => {
-    try {
-      await api.post("/appointments", { serviceId, startAt });
-      const res = await api.get("/appointments");
-      setAppointments(res.data);
-      toast.success("Appointment booked successfully!");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.error || "Failed to book appointment");
-    }
-  };
-
-  // Admin status update
-  const changeStatus = async (id, status) => {
-    try {
-      await api.put(`/appointments/${id}/status`, { status });
-      const res = await api.get("/appointments");
-      setAppointments(res.data);
-      toast.success(`Appointment ${status.toLowerCase()}!`);
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.error || "Failed to update status");
-    }
-  };
-
-  // unauthorized users, tell them to log in
-  if (!user) {
-    return (
-      <div className="max-w-3xl mx-auto mt-20 px-4">
-        <div className="bg-[#13141c] border border-white/10 shadow-2xl shadow-black/50 rounded-3xl p-12 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-violet-600/20 blur-[100px] pointer-events-none rounded-full"></div>
-          
-          <div className="flex justify-center mb-6 relative z-10">
-            <div className="bg-white/5 p-4 rounded-full border border-white/10">
-              <MdLockOutline className="text-5xl text-violet-400" />
-            </div>
-          </div>
-          
-          <h2 className="text-3xl font-bold text-white mb-4 relative z-10">Access Restricted</h2>
-          <p className="text-gray-400 mb-8 text-lg relative z-10">
-            You need to be logged in to view and book your appointments.
-          </p>
-          
-          <Link 
-            to="/login?redirect=/appointments" 
-            className="inline-block bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-violet-900/20 active:scale-95 relative z-10"
-          >
-            Go to Login
-          </Link>
-        </div>
+function Restricted() {
+  return (
+    <Reveal className="py-16 md:py-24 max-w-xl">
+      <FiLock aria-hidden="true" className="text-3xl text-accent mb-6" />
+      <h1 className="font-display text-5xl md:text-6xl leading-[0.95] tracking-[-0.02em]">Log in to book a chair.</h1>
+      <p className="text-muted text-lg mt-5 mb-10 leading-relaxed">
+        Your appointments live in your account. Log in to see them or book a new one.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Button as={Link} to="/login?redirect=/appointments" size="lg">Log in</Button>
+        <Button as={Link} to="/register" size="lg" variant="secondary">Create account</Button>
       </div>
-    );
-  }
+    </Reveal>
+  );
+}
 
-  // Sort the appointments array based on startAt date before rendering
-  const sortedAppointments = [...appointments].sort((a, b) => {
-    const dateA = new Date(a.startAt).getTime();
-    const dateB = new Date(b.startAt).getTime();
-    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-  });
+function ServiceChoice({ services, value, onChange }) {
+  return (
+    <fieldset className="min-w-0">
+      <legend className="text-sm font-medium mb-3">Service</legend>
+      <div role="radiogroup" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s) => {
+          const checked = String(s.id) === String(value);
+          return (
+            <label
+              key={s.id}
+              className={`flex items-center justify-between gap-4 min-h-14 px-4 py-3 rounded-[4px] border cursor-pointer transition-colors duration-200
+                has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent
+                ${checked ? 'border-ink bg-ink text-paper' : 'border-hairline hover:border-ink'}`}
+            >
+              <input
+                type="radio"
+                name="service"
+                value={s.id}
+                checked={checked}
+                onChange={() => onChange(String(s.id))}
+                className="sr-only"
+              />
+              <span className="font-medium">{s.name}</span>
+              <span className={`text-sm tabular-nums shrink-0 ${checked ? 'text-paper/75' : 'text-muted'}`}>
+                {formatDuration(s.durationMin)} · {formatPrice(s.priceCents)}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
+function BookingPanel({ services, appointments, initialServiceId, onBooked }) {
+  const [serviceId, setServiceId] = useState(initialServiceId || '');
+  const [startAt, setStartAt] = useState(null);
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const service = services.find((s) => String(s.id) === String(serviceId));
+
+  // The user's own active bookings block overlapping slots.
+  const taken = useMemo(
+    () =>
+      appointments
+        .filter((a) => a.status !== 'CANCELLED')
+        .map((a) => {
+          const start = new Date(a.startAt);
+          return { start, end: new Date(start.getTime() + (a.service?.durationMin || 30) * 60000) };
+        }),
+    [appointments]
+  );
+
+  const chooseService = (id) => {
+    setServiceId(id);
+    setStartAt(null); // a different duration may invalidate the chosen time
+  };
+
+  const book = async () => {
+    if (!service || !startAt) return;
+    setSubmitting(true);
+    try {
+      await api.post('/appointments', {
+        serviceId: Number(service.id),
+        startAt: startAt.toISOString(),
+        ...(notes.trim() ? { notes: notes.trim() } : {}),
+      });
+      toast.success(`${service.name} booked for ${summaryDateFmt.format(startAt)}, ${timeFmt.format(startAt)}`);
+      setStartAt(null);
+      setNotes('');
+      await onBooked();
+    } catch (err) {
+      console.error(err);
+      toast.error(apiErrorMessage(err, 'Couldn’t book that slot. Pick another time.'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <div className="max-w-5xl mx-auto mt-8">
-      <h1 className="text-4xl font-extrabold mb-8 text-center text-white drop-shadow-lg">
-        Manage Appointments
-      </h1>
-
-      {!isAdmin() && (
-        <div className="bg-[#1A1B26]/80 backdrop-blur-md border border-white/10 shadow-xl rounded-2xl p-8 mb-10 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
-          
-          <h3 className="font-bold text-2xl mb-6 text-white flex items-center gap-2">
-            <MdEvent className="text-violet-400" /> Book an Appointment
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div className="w-full">
-                <label className="block text-gray-400 text-sm mb-2">Service</label>
-                <select
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
-                  value={selectedService}
-                  onChange={(e) => setSelectedService(e.target.value)}
-                >
-                  <option value="" className="bg-gray-900">Select a service...</option>
-                  {services.map((s) => (
-                    <option key={s.id} value={String(s.id)} className="bg-gray-900">
-                      {s.name} ({s.durationMin} min)
-                    </option>
-                  ))}
-                </select>
-            </div>
-
-            <div className="w-full">
-                <label className="block text-gray-400 text-sm mb-2">Date & Time</label>
-                <input
-                  id="start-input"
-                  type="datetime-local"
-                  className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors [color-scheme:dark]"
-                />
-            </div>
-
-            <button
-              className="w-full flex justify-center items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-violet-900/20 active:scale-95"
-              onClick={() => {
-                const serviceId = Number(selectedService);
-                const startInput = document.getElementById("start-input").value;
-                const startAt = startInput ? new Date(startInput).toISOString() : null;
-                if (!serviceId || !startAt) return toast.error("Please choose a service and time.");
-                book(serviceId, startAt);
-              }}
-            >
-              Book Now <IoAddCircle className="text-xl"/>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Sorting header section */}
-      <div className="flex justify-between items-center mb-4 px-2">
-        <h3 className="text-xl font-bold text-white">
-          {isAdmin() ? "All Appointments" : "Your Appointments"}
-        </h3>
-        {appointments.length > 0 && (
-          <button
-            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-            className="flex items-center gap-2 text-sm bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 px-4 py-2 rounded-lg transition-colors"
-          >
-            <MdSwapVert className="text-lg" />
-            {sortOrder === "desc" ? "Newest First" : "Oldest First"}
-          </button>
-        )}
+    <section aria-labelledby="book-title" className="mb-20">
+      <h2 id="book-title" className="font-display text-4xl mb-8">Book a chair</h2>
+      <div className="space-y-10">
+        <ServiceChoice services={services} value={serviceId} onChange={chooseService} />
+        <SlotPicker
+          key={service?.durationMin || 'none'}
+          durationMin={service?.durationMin || 30}
+          taken={taken}
+          value={startAt}
+          onChange={setStartAt}
+        />
+        <Field
+          label={<>Note for the barber <span className="font-normal text-muted">· optional</span></>}
+          hint={notes.length > NOTES_MAX - 100 ? `${NOTES_MAX - notes.length} characters left` : 'Anything they should know, like a style reference or a tender scalp.'}
+          className="max-w-xl"
+        >
+          {(props) => (
+            <textarea
+              {...props}
+              rows={3}
+              maxLength={NOTES_MAX}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className={`${inputClass} h-auto py-2.5 leading-relaxed resize-y`}
+            />
+          )}
+        </Field>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-10 h-10 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+      <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 mt-10 bg-paper border-t-2 border-ink px-4 sm:px-0 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p aria-live="polite" className="text-lg">
+          {service && startAt ? (
+            <>
+              <span className="font-display text-2xl">{service.name}</span>
+              <span className="text-muted"> · {summaryDateFmt.format(startAt)} · {timeFmt.format(startAt)} · </span>
+              <span className="font-medium tabular-nums">{formatPrice(service.priceCents)}</span>
+            </>
+          ) : (
+            <span className="text-muted">{service ? 'Now pick a day and time.' : 'Pick a service, then a day and time.'}</span>
+          )}
+        </p>
+        <Button size="lg" onClick={book} disabled={!service || !startAt || submitting} className="shrink-0">
+          {submitting ? 'Booking…' : 'Book appointment'}
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+/** Customer's own cancel, confirmed in place so one stray tap can't drop a booking. */
+function CustomerCancel({ a, onCancel, busy }) {
+  const [confirming, setConfirming] = useState(false);
+  if (!confirming) {
+    return (
+      <Button size="sm" variant="quietDanger" onClick={() => setConfirming(true)} aria-label={`Cancel ${a.service?.name || 'appointment'} booking`}>
+        <FiX aria-hidden="true" /> Cancel booking
+      </Button>
+    );
+  }
+  return (
+    <div role="group" aria-label="Confirm cancelling this booking" className="flex flex-wrap items-center gap-2">
+      <span className="text-sm text-brick mr-1">Cancel this booking?</span>
+      <Button size="sm" variant="danger" disabled={busy} onClick={() => onCancel(a)}>
+        {busy ? 'Cancelling…' : 'Yes, cancel'}
+      </Button>
+      <Button size="sm" variant="ghost" disabled={busy} onClick={() => setConfirming(false)}>
+        Keep it
+      </Button>
+    </div>
+  );
+}
+
+function AdminActions({ a, isPast, onStatus, busy }) {
+  const active = a.status === 'PENDING' || a.status === 'CONFIRMED';
+  if (active && isPast) {
+    return (
+      <>
+        <Button size="sm" variant="secondary" disabled={busy} onClick={() => onStatus(a, 'COMPLETED')}>
+          <FiCheckCircle aria-hidden="true" /> Mark done
+        </Button>
+        <Button size="sm" variant="ghost" disabled={busy} onClick={() => onStatus(a, 'CANCELLED')} aria-label="Mark as no-show (cancel)">
+          No-show
+        </Button>
+      </>
+    );
+  }
+  if (active) {
+    return (
+      <>
+        {a.status !== 'CONFIRMED' && (
+          <Button size="sm" variant="secondary" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
+            <FiCheck aria-hidden="true" /> Confirm
+          </Button>
+        )}
+        <Button size="sm" variant="danger" disabled={busy} onClick={() => onStatus(a, 'CANCELLED')}>
+          <FiX aria-hidden="true" /> Cancel
+        </Button>
+      </>
+    );
+  }
+  if (a.status === 'CANCELLED' && !isPast) {
+    return (
+      <Button size="sm" variant="ghost" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
+        Restore &amp; confirm
+      </Button>
+    );
+  }
+  return null;
+}
+
+function AppointmentRow({ a, admin, onStatus, onCancel, busy }) {
+  const d = new Date(a.startAt);
+  const isPast = d < new Date();
+  const customerCanCancel = !admin && !isPast && (a.status === 'PENDING' || a.status === 'CONFIRMED');
+  const actions = admin ? <AdminActions a={a} isPast={isPast} onStatus={onStatus} busy={busy} /> : customerCanCancel ? <CustomerCancel a={a} onCancel={onCancel} busy={busy} /> : null;
+  return (
+    <div className={`grid grid-cols-[4.5rem_1fr] gap-x-5 gap-y-4 py-6 border-b border-hairline md:grid-cols-[5rem_1fr_auto] md:items-center`}>
+      <div className={`text-center border-r border-hairline pr-5 row-span-2 md:row-span-1 ${isPast ? 'text-muted' : ''}`}>
+        <p className="text-xs uppercase tracking-[0.08em] text-muted">{weekdayFmt.format(d)}</p>
+        <p className="font-display text-5xl leading-none my-0.5">{d.getDate()}</p>
+        <p className="text-xs uppercase tracking-[0.08em] text-muted">{monthFmt.format(d)} {d.getFullYear() !== new Date().getFullYear() ? d.getFullYear() : ''}</p>
+      </div>
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h4 className="font-display text-2xl md:text-3xl leading-tight">{a.service?.name || 'Service removed'}</h4>
+          <StatusBadge status={a.status} />
         </div>
-      ) : appointments.length === 0 ? (
-        <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/5">
-            <p className="text-gray-400 text-lg">No appointments found.</p>
+        <p className="text-muted mt-1 tabular-nums">
+          {timeFmt.format(d)}
+          {a.service && ` · ${formatDuration(a.service.durationMin)} · ${formatPrice(a.service.priceCents)}`}
+          {admin && a.user && <span className="text-ink"> · {a.user.name || a.user.email}</span>}
+        </p>
+        {a.notes && (
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed border-l-2 border-hairline pl-3 break-words">
+            <span className="sr-only">Note: </span>{a.notes}
+          </p>
+        )}
+      </div>
+      {actions && <div className="col-start-2 md:col-start-auto flex flex-wrap gap-2">{actions}</div>}
+    </div>
+  );
+}
+
+function AppointmentList({ id, title, items, admin, onStatus, onCancel, busyId, reduce }) {
+  return (
+    <section aria-labelledby={id} className="mb-8 last:mb-0">
+      <h3 id={id} className="text-xs font-medium uppercase tracking-[0.12em] text-muted pt-6 pb-1">
+        {title} <span className="tabular-nums">({items.length})</span>
+      </h3>
+      <ul>
+        <AnimatePresence initial={false}>
+          {items.map((a) => (
+            <motion.li
+              key={a.id}
+              layout={!reduce}
+              initial={reduce ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              transition={{ duration: 0.45, ease }}
+            >
+              <AppointmentRow a={a} admin={admin} onStatus={onStatus} onCancel={onCancel} busy={busyId === a.id} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+    </section>
+  );
+}
+
+function Appointments() {
+  const { user, isAdmin } = useContext(AuthContext);
+  const admin = isAdmin();
+  const reduce = useReducedMotion();
+  const [appointments, setAppointments] = useState([]);
+  const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+
+  const [params] = useSearchParams();
+  const initialServiceId = params.get('serviceId');
+
+  const refreshAppointments = async () => {
+    const res = await api.get('/appointments');
+    setAppointments(res.data);
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    (async () => {
+      setIsLoading(true);
+      setLoadError(null);
+      try {
+        const [a, s] = await Promise.all([api.get('/appointments'), api.get('/services')]);
+        if (!active) return;
+        setAppointments(a.data);
+        setServices(s.data);
+      } catch (err) {
+        console.error(err);
+        if (active) setLoadError(apiErrorMessage(err, 'Couldn’t load your appointments.'));
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  const changeStatus = async (a, status) => {
+    setBusyId(a.id);
+    try {
+      await api.put(`/appointments/${a.id}/status`, { status });
+      await refreshAppointments();
+      toast.success({ CONFIRMED: 'Appointment confirmed', COMPLETED: 'Marked as done', CANCELLED: 'Appointment cancelled' }[status]);
+    } catch (err) {
+      console.error(err);
+      toast.error(apiErrorMessage(err, 'Couldn’t update the appointment.'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // Customer cancels through the owner update route; status is the only field sent.
+  const cancelOwn = async (a) => {
+    setBusyId(a.id);
+    try {
+      await api.put(`/appointments/${a.id}`, { status: 'CANCELLED' });
+      await refreshAppointments();
+      toast.success('Booking cancelled');
+    } catch (err) {
+      console.error(err);
+      toast.error(apiErrorMessage(err, 'Couldn’t cancel the booking.'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // Upcoming reads soonest first; past reads most recent first.
+  const { upcoming, past } = useMemo(() => {
+    const now = new Date();
+    const byTime = (x, y) => new Date(x.startAt) - new Date(y.startAt);
+    const all = [...appointments].sort(byTime);
+    return {
+      upcoming: all.filter((a) => new Date(a.startAt) >= now),
+      past: all.filter((a) => new Date(a.startAt) < now).reverse(),
+    };
+  }, [appointments]);
+
+  if (!user) return <Restricted />;
+
+  const validInitial = services.some((s) => String(s.id) === String(initialServiceId)) ? initialServiceId : '';
+
+  return (
+    <>
+      <PageHeader
+        title={admin ? 'Appointments' : 'Your chair'}
+        lede={admin ? 'Every booking in the shop. Confirm new ones, cancel what won’t happen, mark past ones done.' : 'Book a new appointment or check on the ones you have.'}
+      />
+
+      {loadError ? (
+        <div className="py-12">
+          <p className="text-lg">{loadError}</p>
+          <p className="text-muted mt-1">Check that the API is running, then refresh the page.</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {sortedAppointments.map((a) => (
-            <div
-              key={a.id}
-              className="bg-[#13141c] border border-white/5 rounded-xl p-5 shadow-lg hover:border-violet-500/30 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-            >
-              <div>
-                <div className="text-xl font-bold text-white mb-1 flex items-center gap-3">
-                  {a.service?.name}
-                  <span
-                      className={`text-xs px-2 py-0.5 rounded-full border ${
-                        a.status === "CONFIRMED"
-                          ? "bg-green-500/10 text-green-400 border-green-500/20"
-                          : a.status === "CANCELLED"
-                          ? "bg-red-500/10 text-red-400 border-red-500/20"
-                          : "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
-                      }`}
-                    >
-                      {a.status}
-                    </span>
-                </div>
-                <div className="text-gray-400 text-sm">
-                  {new Date(a.startAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-                </div>
-              </div>
-                  
-              {isAdmin() && (
-                <div className="flex gap-3 w-full md:w-auto">
-                  {a.status !== "CONFIRMED" && (
-                      <button
-                        onClick={() => changeStatus(a.id, "CONFIRMED")}
-                        className="flex-1 md:flex-none flex justify-center items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 px-4 py-2 rounded-lg transition"
-                      >
-                        Confirm <GiConfirmed />
-                      </button>
-                  )}
-                  {a.status !== "CANCELLED" && (
-                      <button
-                        onClick={() => changeStatus(a.id, "CANCELLED")}
-                        className="flex-1 md:flex-none flex justify-center items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 py-2 rounded-lg transition"
-                      >
-                        Cancel <MdCancel />
-                      </button>
-                  )}
-                </div>
-              )}
+        <>
+          {!admin && !isLoading && services.length > 0 && (
+            <BookingPanel
+              key={validInitial}
+              services={services}
+              appointments={appointments}
+              initialServiceId={validInitial}
+              onBooked={refreshAppointments}
+            />
+          )}
+
+          <section aria-labelledby="list-title">
+            <div className="border-b border-ink pb-4">
+              <h2 id="list-title" className="font-display text-4xl">
+                {admin ? 'All bookings' : 'Your appointments'}
+                {!isLoading && <span className="text-muted text-2xl tabular-nums"> ({appointments.length})</span>}
+              </h2>
             </div>
-          ))}
-        </div>
+
+            {isLoading ? (
+              <div aria-busy="true" aria-label="Loading appointments">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex gap-5 py-6 border-b border-hairline">
+                    <Skeleton className="h-16 w-16" />
+                    <div className="flex-1 space-y-3 pt-1">
+                      <Skeleton className="h-7 w-48" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : appointments.length === 0 ? (
+              <p className="py-10 text-muted text-lg">
+                {admin ? 'No bookings yet.' : 'Nothing booked yet. Pick a service above to get started.'}
+              </p>
+            ) : (
+              <>
+                {upcoming.length > 0 ? (
+                  <AppointmentList id="upcoming-title" title="Upcoming" items={upcoming} admin={admin} onStatus={changeStatus} onCancel={cancelOwn} busyId={busyId} reduce={reduce} />
+                ) : (
+                  <p className="pt-6 pb-10 text-muted">{admin ? 'Nothing upcoming.' : 'Nothing upcoming. Book a chair above.'}</p>
+                )}
+                {past.length > 0 && (
+                  <AppointmentList id="past-title" title="Past" items={past} admin={admin} onStatus={changeStatus} onCancel={cancelOwn} busyId={busyId} reduce={reduce} />
+                )}
+              </>
+            )}
+          </section>
+        </>
       )}
-    </div>
+    </>
   );
 }
 

@@ -9,7 +9,8 @@ export class AppointmentRepository {
 
   async getAll() {
     return this.prisma.appointment.findMany({
-      include: { service: true, user: true },
+      // Never send the password hash to the client: pick the public fields.
+      include: { service: true, user: { select: { id: true, name: true, email: true } } },
     });
   }
 

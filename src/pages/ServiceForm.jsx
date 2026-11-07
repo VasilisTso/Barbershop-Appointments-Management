@@ -1,25 +1,40 @@
-// create & edit service form
-// src/pages/ServiceForm.jsx
+// Create & edit service form (admin only).
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { FiArrowLeft } from 'react-icons/fi';
 import api from '../services/api';
-import { useNavigate, useParams } from 'react-router-dom';
+import Field from '../components/ui/Field';
+import Button from '../components/ui/Button';
+import Skeleton from '../components/ui/Skeleton';
+import PageHeader from '../components/ui/PageHeader';
+import FormError from '../components/FormError';
+import ServiceRow from '../components/ServiceRow';
+import { apiErrorMessage, apiFieldErrors } from '../lib/apiError';
 
 function ServiceForm() {
   const navigate = useNavigate();
-  const { id } = useParams(); // if id exists, we’re editing
-  const [form, setForm] = useState({ name: '', durationMin: '', priceCents: '' });
-  const [loading, setLoading] = useState(false);
+  const { id } = useParams(); // present when editing
+  // Price is edited in euros and sent to the API in cents.
+  const [form, setForm] = useState({ name: '', durationMin: '', priceEuros: '' });
+  const [loading, setLoading] = useState(Boolean(id));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
-    if (id) {
-      // Fetch existing service data when editing
-      setLoading(true);
-      api
-        .get(`/services/${id}`)
-        .then((res) => setForm(res.data))
-        .catch((err) => console.error("Failed to fetch service", err))
-        .finally(() => setLoading(false));
-    }
+    if (!id) return;
+    api
+      .get(`/services/${id}`)
+      .then((res) =>
+        setForm({
+          name: res.data.name,
+          durationMin: String(res.data.durationMin),
+          priceEuros: (res.data.priceCents / 100).toFixed(2),
+        })
+      )
+      .catch((err) => setError(apiErrorMessage(err, 'Couldn’t load this service.')))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleChange = (e) => {
@@ -29,86 +44,109 @@ function ServiceForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setFieldErrors({});
+    setSaving(true);
+    const payload = {
+      name: form.name.trim(),
+      durationMin: Number(form.durationMin),
+      priceCents: Math.round(Number(form.priceEuros) * 100),
+    };
     try {
-      if (id) {
-        await api.put(`/services/${id}`, {
-          name: form.name,
-          durationMin: Number(form.durationMin),
-          priceCents: Number(form.priceCents),
-        });
-      } else {
-        await api.post("/services", {
-          name: form.name,
-          durationMin: Number(form.durationMin),
-          priceCents: Number(form.priceCents),
-        });
-      }
-      navigate("/services");
+      if (id) await api.put(`/services/${id}`, payload);
+      else await api.post('/services', payload);
+      toast.success(id ? `${payload.name} updated` : `${payload.name} added to the list`);
+      navigate('/services');
     } catch (err) {
-      console.error("Error saving service:", err);
-      alert("Failed to save service");
+      console.error('Error saving service:', err);
+      const fe = apiFieldErrors(err);
+      setFieldErrors({ name: fe.name, durationMin: fe.durationMin, priceEuros: fe.priceCents });
+      if (!Object.keys(fe).length) setError(apiErrorMessage(err, 'Couldn’t save the service. Try again.'));
+      setSaving(false);
     }
   };
 
-  if (loading) return <div className="text-center text-white mt-20 text-lg animate-pulse">Loading service data...</div>;
+  const preview = {
+    name: form.name || 'Service name',
+    durationMin: Number(form.durationMin) || 0,
+    priceCents: Math.round((Number(form.priceEuros) || 0) * 100),
+  };
 
   return (
-    <div className="max-w-lg mx-auto mt-16 bg-[#13141c] border border-white/10 shadow-2xl rounded-3xl p-8 relative">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-t-3xl"></div>
-      
-      <h2 className="text-3xl text-white font-bold mb-8 text-center">
-        {id ? "Edit Service" : "Add New Service"}
-      </h2>
+    <>
+      <Link to="/services" className="inline-flex items-center gap-2 text-[15px] text-muted hover:text-ink mb-6 py-1">
+        <FiArrowLeft aria-hidden="true" /> Services
+      </Link>
+      <PageHeader title={id ? 'Edit service' : 'New service'} />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-gray-400 text-sm mb-2 font-medium">Service Name</label>
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
-            placeholder="Haircut & Beard Trim"
-          />
+      <div className="grid gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-6">
+          <FormError>{error}</FormError>
+          {loading ? (
+            <div className="space-y-6" aria-busy="true" aria-label="Loading service">
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-11 w-1/2" />
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <Field
+                label="Name"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                error={fieldErrors.name}
+                placeholder="Haircut & beard trim"
+                required
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Field
+                  label="Duration (minutes)"
+                  name="durationMin"
+                  type="number"
+                  inputMode="numeric"
+                  min={5}
+                  step={5}
+                  value={form.durationMin}
+                  onChange={handleChange}
+                  error={fieldErrors.durationMin}
+                  placeholder="30"
+                  required
+                />
+                <Field
+                  label="Price (€)"
+                  name="priceEuros"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step={0.01}
+                  value={form.priceEuros}
+                  onChange={handleChange}
+                  error={fieldErrors.priceEuros}
+                  placeholder="25.00"
+                  required
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" size="lg" disabled={saving}>
+                  {saving ? 'Saving…' : id ? 'Save changes' : 'Add service'}
+                </Button>
+                <Button as={Link} to="/services" size="lg" variant="ghost">
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-gray-400 text-sm mb-2 font-medium">Duration (min)</label>
-            <input
-              name="durationMin"
-              type="number"
-              value={form.durationMin}
-              onChange={handleChange}
-              required
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
-                placeholder="30"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-gray-400 text-sm mb-2 font-medium">Price (€)</label>
-            <input
-              name="priceCents"
-              type="number"
-              value={form.priceCents}
-              onChange={handleChange}
-              required
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-violet-500 focus:outline-none transition-colors"
-                placeholder="2500"
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-violet-900/20 active:scale-95"
-        >
-          {id ? "Update Service" : "Create Service"}
-        </button>
-      </form>
-    </div>
+        <aside aria-label="Preview" className="lg:col-span-5 lg:col-start-8">
+          <h2 className="text-sm text-muted mb-1">How it reads on the price list</h2>
+          <ul className="border-t border-ink">
+            <ServiceRow service={preview} />
+          </ul>
+        </aside>
+      </div>
+    </>
   );
 }
 

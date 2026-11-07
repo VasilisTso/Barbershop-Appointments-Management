@@ -1,102 +1,161 @@
-import React, { useEffect, useState, useContext } from 'react';
-import api from '../services/api';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import toast from 'react-hot-toast';
+import { FiEdit2, FiTrash2, FiPlus, FiArrowRight } from 'react-icons/fi';
+import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { FiEdit, FiTrash } from "react-icons/fi";
-import { MdOutlineArrowOutward } from "react-icons/md";
-import { CiLogin } from "react-icons/ci";
-import { IoAddCircle } from "react-icons/io5";
+import Button from '../components/ui/Button';
+import PageHeader from '../components/ui/PageHeader';
+import Skeleton from '../components/ui/Skeleton';
+import ServiceRow from '../components/ServiceRow';
+
+function AdminActions({ service, onDelete }) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  if (confirming) {
+    return (
+      <div role="group" aria-label={`Confirm deleting ${service.name}`} className="flex items-center gap-2">
+        <span className="text-sm text-brick mr-1">Delete this service?</span>
+        <Button
+          size="sm"
+          variant="danger"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            const ok = await onDelete(service);
+            if (!ok) {
+              setBusy(false);
+              setConfirming(false);
+            }
+          }}
+        >
+          {busy ? 'Deleting…' : 'Delete'}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setConfirming(false)} disabled={busy}>
+          Keep
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Button as={Link} to={`/services/edit/${service.id}`} size="sm" variant="ghost" aria-label={`Edit ${service.name}`}>
+        <FiEdit2 aria-hidden="true" /> Edit
+      </Button>
+      <Button size="sm" variant="quietDanger" onClick={() => setConfirming(true)} aria-label={`Delete ${service.name}`}>
+        <FiTrash2 aria-hidden="true" /> Delete
+      </Button>
+    </>
+  );
+}
 
 function Services() {
   const [services, setServices] = useState([]);
-  const { user, } = useContext(AuthContext);  
+  const [status, setStatus] = useState('loading');
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.role === 'ADMIN';
+  const reduce = useReducedMotion();
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
-      const res = await api.get("/services");
+      const res = await api.get('/services');
       setServices(res.data);
+      setStatus('ready');
     } catch (err) {
-      console.error("Failed to fetch services", err);
+      console.error('Failed to fetch services', err);
+      setStatus('error');
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [fetchServices]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
+  const handleDelete = async (service) => {
     try {
-      await api.delete(`/services/${id}`);
-      fetchServices();
+      await api.delete(`/services/${service.id}`);
+      setServices((list) => list.filter((s) => s.id !== service.id));
+      toast.success(`${service.name} removed`);
+      return true;
     } catch (err) {
-      alert("Error deleting service", err);
+      console.error(err);
+      toast.error(err.response?.data?.error || 'Couldn’t delete the service. It may still have appointments.');
+      return false;
     }
   };
 
+  const bookAction = (s) =>
+    user ? (
+      <Button as={Link} to={`/appointments?serviceId=${s.id}`} size="sm" variant="secondary" aria-label={`Book ${s.name}`}>
+        Book <FiArrowRight aria-hidden="true" />
+      </Button>
+    ) : (
+      <Button as={Link} to="/login?redirect=/services" size="sm" variant="ghost" aria-label={`Log in to book ${s.name}`}>
+        Log in to book
+      </Button>
+    );
+
   return (
-    <div className="max-w-6xl mx-auto mt-10">
-      <div className='flex justify-between items-center mb-10'>
-        <h2 className="text-3xl font-semibold text-white text-center">
-          Our Services
-        </h2>
+    <>
+      <PageHeader
+        title="Services"
+        lede="Every service, its time in the chair, and what it costs."
+        actions={
+          isAdmin && (
+            <Button as={Link} to="/services/create">
+              <FiPlus aria-hidden="true" /> Add service
+            </Button>
+          )
+        }
+      />
 
-        {user && user.role === "ADMIN" && (
-          <Link
-            to="/services/create"
-            className="flex justify-center items-center gap-2 bg-violet-800 text-white px-3 py-1 text-center rounded-md font-medium hover:bg-violet-900 transition"
-          >
-            Add Service <IoAddCircle />
-          </Link>
-        )}
-      </div>
-      
-      {services.length === 0 ? (
-        <p className="text-center text-gray-300">No services available yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {services.map((s) => (
-            <div
-              key={s.id}
-              className="group relative bg-[#1A1B26] rounded-2xl p-6 border border-white/5 hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1"
-            >
-              {/* Absolute glow effect behind the card */}
-              <div className="absolute inset-0 bg-violet-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-bold text-white group-hover:text-violet-300 transition-colors">{s.name}</h3>
-                    <span className="text-center bg-violet-500/10 text-violet-300 px-3 py-1 rounded-full text-sm font-medium border border-violet-500/20">
-                      {s.durationMin} min
-                    </span>
-                </div>
-                
-                <p className="text-gray-400 mb-6 text-sm">Experience our premium {s.name} service designed for your style.</p>
-                
-                <div className="flex items-end justify-between mt-auto">
-                    <p className="text-3xl font-bold text-white">€{(s.priceCents / 100).toFixed(2)}</p>
-                    
-                    {/* Action Button */}
-                    {user && user.role === "ADMIN" ? (
-                      <div className="flex gap-2">
-                          <Link to={`/services/edit/${s.id}`} className="p-2 text-gray-400 hover:text-white bg-white/5 rounded-lg transition"><FiEdit /></Link>
-                          <button onClick={() => handleDelete(s.id)} className="p-2 text-red-400 hover:text-red-300 bg-red-500/10 rounded-lg transition"><FiTrash /></button>
-                      </div>
-                    ) : (
-                      <Link
-                          to={user ? `/appointments?serviceId=${s.id}&serviceName=${encodeURIComponent(s.name)}` : `/login?redirect=/services`}
-                          className="bg-white text-black hover:bg-violet-400 hover:text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-white/5"
-                      >
-                          {user ? "Book Now" : "Login to Book"}
-                      </Link>
-                    )}
-                </div>
-            </div>
-            </div>
+      {status === 'loading' ? (
+        <ul aria-busy="true" aria-label="Loading services">
+          {[0, 1, 2, 3].map((i) => (
+            <li key={i} className="flex items-center justify-between py-6 border-b border-hairline">
+              <Skeleton className="h-7 w-56" />
+              <Skeleton className="h-5 w-32" />
+            </li>
           ))}
+        </ul>
+      ) : status === 'error' ? (
+        <div className="py-12">
+          <p className="text-lg">The price list couldn't load.</p>
+          <p className="text-muted mt-1 mb-6">Check that the API is running, then try again.</p>
+          <Button variant="secondary" onClick={() => { setStatus('loading'); fetchServices(); }}>Try again</Button>
         </div>
+      ) : services.length === 0 ? (
+        <div className="py-12">
+          <p className="text-lg">No services listed yet.</p>
+          {isAdmin && <p className="text-muted mt-1">Add the first one to open the book.</p>}
+        </div>
+      ) : (
+        <ul>
+          <AnimatePresence initial={false}>
+            {services.map((s, i) => (
+              <motion.li
+                key={s.id}
+                layout={!reduce}
+                initial={reduce ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
+                transition={{ duration: 0.45, delay: reduce ? 0 : Math.min(i, 8) * 0.04, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <ServiceRow
+                  as="div"
+                  headingLevel={2}
+                  service={s}
+                  actions={isAdmin ? <AdminActions service={s} onDelete={handleDelete} /> : bookAction(s)}
+                />
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
       )}
-    </div>
+    </>
   );
 }
 
