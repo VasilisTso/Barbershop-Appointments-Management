@@ -1,95 +1,147 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import { AuthContext } from '../context/AuthContext';
-import { FiMenu, FiX } from "react-icons/fi";
-import { CiLogout, CiLogin } from "react-icons/ci";
-import { FaUser } from "react-icons/fa";
-import { motion } from "framer-motion"; // eslint-disable-line no-unused-vars
+import Button from './ui/Button';
+import Wordmark from './ui/Wordmark';
 
-function Navbar() {
-  const { user, logout, } = useContext(AuthContext);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const location = useLocation(); // active state
+const links = [
+  { to: '/services', label: 'Services' },
+  { to: '/appointments', label: 'Appointments' },
+];
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-
-  // Helper for link styling
-  const NavLink = ({ to, children }) => {
-    const isActive = location.pathname === to;
-    return (
-        <Link to={to} className={`relative px-4 py-2 transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 hover:text-white'}`}>
-            {children}
-            {isActive && (
-                <motion.div layoutId="navbar-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-violet-500 rounded-full" />
-            )}
-        </Link>
-    );
-  };
+function NavLink({ to, children }) {
+  const location = useLocation();
+  const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
 
   return (
-    <motion.nav 
-      initial={{ y: -20, opacity: 0 }} 
-      animate={{ y: 0, opacity: 1 }}
-      className="sticky top-4 z-50 mx-4 md:mx-auto max-w-6xl rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/20"
+    <Link
+      to={to}
+      aria-current={isActive ? 'page' : undefined}
+      className={`relative py-2 text-[15px] transition-colors duration-200 ${isActive ? 'text-ink' : 'text-muted hover:text-ink'}`}
     >
-      <div className="flex justify-between items-center px-6 py-4">
-        <Link to="/" className="text-2xl font-extrabold tracking-tighter flex items-center gap-1 pr-20">
-          <span className="text-3xl">💈</span> 
-          <span className='bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent'>BarberVT</span>
-        </Link>
-
-        {/* Hamburger */}
-        <button
-          onClick={toggleMenu}
-          className="md:hidden text-2xl focus:outline-none"
-        >
-          {menuOpen ? <FiX /> : <FiMenu />}
-        </button>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-6">
-          <NavLink to="/services">Services</NavLink>
-          <NavLink to="/appointments">Appointments</NavLink>
-          
-          <div className="h-6 w-px bg-white/10 mx-2"></div> {/* Separator */}
-
-          {!user ? (
-            <div className="flex gap-4">
-              <Link to="/login" className="text-gray-300 hover:text-white transition flex items-center gap-2">Login</Link>
-              <Link to="/register" className="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2 rounded-full font-medium transition shadow-lg shadow-violet-500/20 flex items-center gap-2">
-                Register <FaUser className="text-xs"/>
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-400">Hi, {user.name}</span>
-                <button onClick={logout} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-full transition flex items-center gap-2 border border-red-500/10 cursor-pointer">
-                    <CiLogout />
-                </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Menu (Simplified animation) */}
-      {menuOpen && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="md:hidden border-t border-white/10 bg-black/90 rounded-b-2xl overflow-hidden">
-            <div className="flex flex-col p-6 gap-4">
-                <Link to="/services" className="text-gray-300 py-2">Services</Link>
-                <Link to="/appointments" className="text-gray-300 py-2">Appointments</Link>
-                {!user ? (
-                    <>
-                        <Link to="/login" className="text-gray-300 py-2">Login</Link>
-                        <Link to="/register" className="bg-violet-600 text-white py-3 rounded-lg text-center">Register</Link>
-                    </>
-                ) : (
-                    <button onClick={logout} className="text-red-400 text-left py-2">Logout</button>
-                )}
-            </div>
-        </motion.div>
+      {children}
+      {isActive && (
+        <motion.span
+          layoutId="nav-underline"
+          className="absolute -bottom-px left-0 right-0 h-px bg-ink"
+          transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+        />
       )}
-    </motion.nav>
+    </Link>
   );
 }
 
-export default Navbar
+function Navbar() {
+  const { user, logout } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const reduce = useReducedMotion();
+
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  return (
+    <header className="sticky top-0 z-50 bg-paper border-b border-hairline">
+      <nav aria-label="Main" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <Link to="/" className="text-[1.65rem]" aria-label="Barbershop VT, home">
+          <Wordmark />
+        </Link>
+
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-8">
+          {links.map((l) => (
+            <NavLink key={l.to} to={l.to}>
+              {l.label}
+            </NavLink>
+          ))}
+
+          <span aria-hidden="true" className="h-5 w-px bg-hairline" />
+
+          {!user ? (
+            <div className="flex items-center gap-2">
+              <Button as={Link} to="/login" variant="ghost" size="sm">
+                Log in
+              </Button>
+              <Button as={Link} to="/register" size="sm">
+                Create account
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted">
+                {user.name || user.email}
+                {user.role === 'ADMIN' && <span className="ml-2 text-xs uppercase tracking-[0.08em] text-accent">Admin</span>}
+              </span>
+              <Button variant="ghost" size="sm" onClick={logout} aria-label="Log out">
+                <FiLogOut aria-hidden="true" />
+                <span>Log out</span>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile toggle */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          className="md:hidden grid place-items-center size-11 -mr-2 text-2xl rounded-[4px] cursor-pointer"
+        >
+          {menuOpen ? <FiX aria-hidden="true" /> : <FiMenu aria-hidden="true" />}
+        </button>
+      </nav>
+
+      <AnimatePresence initial={false}>
+        {menuOpen && (
+          <motion.div
+            id="mobile-menu"
+            key="mobile-menu"
+            initial={reduce ? false : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden overflow-hidden border-t border-hairline bg-paper"
+          >
+            <div className="px-4 sm:px-6 py-4 flex flex-col">
+              {links.map((l) => (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  aria-current={location.pathname === l.to ? 'page' : undefined}
+                  className="font-display text-3xl py-3 border-b border-hairline aria-[current=page]:text-accent"
+                >
+                  {l.label}
+                </Link>
+              ))}
+              {!user ? (
+                <div className="grid grid-cols-2 gap-3 pt-5">
+                  <Button as={Link} to="/login" variant="secondary">
+                    Log in
+                  </Button>
+                  <Button as={Link} to="/register">
+                    Create account
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between pt-5">
+                  <span className="text-sm text-muted">Signed in as {user.name || user.email}</span>
+                  <Button variant="secondary" size="sm" onClick={logout}>
+                    <FiLogOut aria-hidden="true" /> Log out
+                  </Button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+export default Navbar;
