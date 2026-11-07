@@ -1,15 +1,17 @@
 /*
 Fetches appointments depending on role (backend returns the user's own, or all for admin).
-Users book through the slot picker; admins confirm or cancel.
+Users book through the slot picker (with an optional note) and can cancel their own upcoming bookings.
+Admins confirm or cancel upcoming bookings and mark past ones done.
 */
 import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import toast from 'react-hot-toast';
-import { FiArrowDown, FiArrowUp, FiCheck, FiX, FiLock } from 'react-icons/fi';
+import { FiCheck, FiX, FiLock, FiCheckCircle } from 'react-icons/fi';
 import api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import Button from '../components/ui/Button';
+import Field, { inputClass } from '../components/ui/Field';
 import PageHeader from '../components/ui/PageHeader';
 import Reveal from '../components/ui/Reveal';
 import Skeleton from '../components/ui/Skeleton';
@@ -23,6 +25,7 @@ const summaryDateFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', day:
 const timeFmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
 const monthFmt = new Intl.DateTimeFormat('en-GB', { month: 'short' });
 const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short' });
+const NOTES_MAX = 500;
 
 function Restricted() {
   return (
@@ -77,6 +80,7 @@ function ServiceChoice({ services, value, onChange }) {
 function BookingPanel({ services, appointments, initialServiceId, onBooked }) {
   const [serviceId, setServiceId] = useState(initialServiceId || '');
   const [startAt, setStartAt] = useState(null);
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const service = services.find((s) => String(s.id) === String(serviceId));
@@ -102,9 +106,14 @@ function BookingPanel({ services, appointments, initialServiceId, onBooked }) {
     if (!service || !startAt) return;
     setSubmitting(true);
     try {
-      await api.post('/appointments', { serviceId: Number(service.id), startAt: startAt.toISOString() });
+      await api.post('/appointments', {
+        serviceId: Number(service.id),
+        startAt: startAt.toISOString(),
+        ...(notes.trim() ? { notes: notes.trim() } : {}),
+      });
       toast.success(`${service.name} booked for ${summaryDateFmt.format(startAt)}, ${timeFmt.format(startAt)}`);
       setStartAt(null);
+      setNotes('');
       await onBooked();
     } catch (err) {
       console.error(err);
@@ -126,6 +135,22 @@ function BookingPanel({ services, appointments, initialServiceId, onBooked }) {
           value={startAt}
           onChange={setStartAt}
         />
+        <Field
+          label={<>Note for the barber <span className="font-normal text-muted">· optional</span></>}
+          hint={notes.length > NOTES_MAX - 100 ? `${NOTES_MAX - notes.length} characters left` : 'Anything they should know, like a style reference or a tender scalp.'}
+          className="max-w-xl"
+        >
+          {(props) => (
+            <textarea
+              {...props}
+              rows={3}
+              maxLength={NOTES_MAX}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className={`${inputClass} h-auto py-2.5 leading-relaxed resize-y`}
+            />
+          )}
+        </Field>
       </div>
 
       <div className="sticky bottom-0 z-10 -mx-4 sm:mx-0 mt-10 bg-paper border-t-2 border-ink px-4 sm:px-0 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -148,9 +173,72 @@ function BookingPanel({ services, appointments, initialServiceId, onBooked }) {
   );
 }
 
-function AppointmentRow({ a, admin, onStatus, busy }) {
+/** Customer's own cancel, confirmed in place so one stray tap can't drop a booking. */
+function CustomerCancel({ a, onCancel, busy }) {
+  const [confirming, setConfirming] = useState(false);
+  if (!confirming) {
+    return (
+      <Button size="sm" variant="quietDanger" onClick={() => setConfirming(true)} aria-label={`Cancel ${a.service?.name || 'appointment'} booking`}>
+        <FiX aria-hidden="true" /> Cancel booking
+      </Button>
+    );
+  }
+  return (
+    <div role="group" aria-label="Confirm cancelling this booking" className="flex flex-wrap items-center gap-2">
+      <span className="text-sm text-brick mr-1">Cancel this booking?</span>
+      <Button size="sm" variant="danger" disabled={busy} onClick={() => onCancel(a)}>
+        {busy ? 'Cancelling…' : 'Yes, cancel'}
+      </Button>
+      <Button size="sm" variant="ghost" disabled={busy} onClick={() => setConfirming(false)}>
+        Keep it
+      </Button>
+    </div>
+  );
+}
+
+function AdminActions({ a, isPast, onStatus, busy }) {
+  const active = a.status === 'PENDING' || a.status === 'CONFIRMED';
+  if (active && isPast) {
+    return (
+      <>
+        <Button size="sm" variant="secondary" disabled={busy} onClick={() => onStatus(a, 'COMPLETED')}>
+          <FiCheckCircle aria-hidden="true" /> Mark done
+        </Button>
+        <Button size="sm" variant="ghost" disabled={busy} onClick={() => onStatus(a, 'CANCELLED')} aria-label="Mark as no-show (cancel)">
+          No-show
+        </Button>
+      </>
+    );
+  }
+  if (active) {
+    return (
+      <>
+        {a.status !== 'CONFIRMED' && (
+          <Button size="sm" variant="secondary" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
+            <FiCheck aria-hidden="true" /> Confirm
+          </Button>
+        )}
+        <Button size="sm" variant="danger" disabled={busy} onClick={() => onStatus(a, 'CANCELLED')}>
+          <FiX aria-hidden="true" /> Cancel
+        </Button>
+      </>
+    );
+  }
+  if (a.status === 'CANCELLED' && !isPast) {
+    return (
+      <Button size="sm" variant="ghost" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
+        Restore &amp; confirm
+      </Button>
+    );
+  }
+  return null;
+}
+
+function AppointmentRow({ a, admin, onStatus, onCancel, busy }) {
   const d = new Date(a.startAt);
   const isPast = d < new Date();
+  const customerCanCancel = !admin && !isPast && (a.status === 'PENDING' || a.status === 'CONFIRMED');
+  const actions = admin ? <AdminActions a={a} isPast={isPast} onStatus={onStatus} busy={busy} /> : customerCanCancel ? <CustomerCancel a={a} onCancel={onCancel} busy={busy} /> : null;
   return (
     <div className={`grid grid-cols-[4.5rem_1fr] gap-x-5 gap-y-4 py-6 border-b border-hairline md:grid-cols-[5rem_1fr_auto] md:items-center`}>
       <div className={`text-center border-r border-hairline pr-5 row-span-2 md:row-span-1 ${isPast ? 'text-muted' : ''}`}>
@@ -160,36 +248,48 @@ function AppointmentRow({ a, admin, onStatus, busy }) {
       </div>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h3 className="font-display text-2xl md:text-3xl leading-tight">{a.service?.name || 'Service removed'}</h3>
+          <h4 className="font-display text-2xl md:text-3xl leading-tight">{a.service?.name || 'Service removed'}</h4>
           <StatusBadge status={a.status} />
         </div>
         <p className="text-muted mt-1 tabular-nums">
-          {isPast && <span className="text-ink">Past · </span>}
           {timeFmt.format(d)}
           {a.service && ` · ${formatDuration(a.service.durationMin)} · ${formatPrice(a.service.priceCents)}`}
           {admin && a.user && <span className="text-ink"> · {a.user.name || a.user.email}</span>}
         </p>
+        {a.notes && (
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed border-l-2 border-hairline pl-3 break-words">
+            <span className="sr-only">Note: </span>{a.notes}
+          </p>
+        )}
       </div>
-      {admin && (a.status === 'PENDING' || a.status === 'CONFIRMED') && (
-        <div className="col-start-2 md:col-start-auto flex gap-2">
-          {a.status !== 'CONFIRMED' && (
-            <Button size="sm" variant="secondary" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
-              <FiCheck aria-hidden="true" /> Confirm
-            </Button>
-          )}
-          <Button size="sm" variant="danger" disabled={busy} onClick={() => onStatus(a, 'CANCELLED')}>
-            <FiX aria-hidden="true" /> Cancel
-          </Button>
-        </div>
-      )}
-      {admin && a.status === 'CANCELLED' && (
-        <div className="col-start-2 md:col-start-auto">
-          <Button size="sm" variant="ghost" disabled={busy} onClick={() => onStatus(a, 'CONFIRMED')}>
-            Restore &amp; confirm
-          </Button>
-        </div>
-      )}
+      {actions && <div className="col-start-2 md:col-start-auto flex flex-wrap gap-2">{actions}</div>}
     </div>
+  );
+}
+
+function AppointmentList({ id, title, items, admin, onStatus, onCancel, busyId, reduce }) {
+  return (
+    <section aria-labelledby={id} className="mb-8 last:mb-0">
+      <h3 id={id} className="text-xs font-medium uppercase tracking-[0.12em] text-muted pt-6 pb-1">
+        {title} <span className="tabular-nums">({items.length})</span>
+      </h3>
+      <ul>
+        <AnimatePresence initial={false}>
+          {items.map((a) => (
+            <motion.li
+              key={a.id}
+              layout={!reduce}
+              initial={reduce ? false : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              transition={{ duration: 0.45, ease }}
+            >
+              <AppointmentRow a={a} admin={admin} onStatus={onStatus} onCancel={onCancel} busy={busyId === a.id} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
+    </section>
   );
 }
 
@@ -199,7 +299,6 @@ function Appointments() {
   const reduce = useReducedMotion();
   const [appointments, setAppointments] = useState([]);
   const [services, setServices] = useState([]);
-  const [sortOrder, setSortOrder] = useState('desc');
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [busyId, setBusyId] = useState(null);
@@ -240,7 +339,7 @@ function Appointments() {
     try {
       await api.put(`/appointments/${a.id}/status`, { status });
       await refreshAppointments();
-      toast.success(status === 'CONFIRMED' ? 'Appointment confirmed' : 'Appointment cancelled');
+      toast.success({ CONFIRMED: 'Appointment confirmed', COMPLETED: 'Marked as done', CANCELLED: 'Appointment cancelled' }[status]);
     } catch (err) {
       console.error(err);
       toast.error(apiErrorMessage(err, 'Couldn’t update the appointment.'));
@@ -249,14 +348,31 @@ function Appointments() {
     }
   };
 
-  const sorted = useMemo(
-    () =>
-      [...appointments].sort((x, y) => {
-        const diff = new Date(x.startAt) - new Date(y.startAt);
-        return sortOrder === 'desc' ? -diff : diff;
-      }),
-    [appointments, sortOrder]
-  );
+  // Customer cancels through the owner update route; status is the only field sent.
+  const cancelOwn = async (a) => {
+    setBusyId(a.id);
+    try {
+      await api.put(`/appointments/${a.id}`, { status: 'CANCELLED' });
+      await refreshAppointments();
+      toast.success('Booking cancelled');
+    } catch (err) {
+      console.error(err);
+      toast.error(apiErrorMessage(err, 'Couldn’t cancel the booking.'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // Upcoming reads soonest first; past reads most recent first.
+  const { upcoming, past } = useMemo(() => {
+    const now = new Date();
+    const byTime = (x, y) => new Date(x.startAt) - new Date(y.startAt);
+    const all = [...appointments].sort(byTime);
+    return {
+      upcoming: all.filter((a) => new Date(a.startAt) >= now),
+      past: all.filter((a) => new Date(a.startAt) < now).reverse(),
+    };
+  }, [appointments]);
 
   if (!user) return <Restricted />;
 
@@ -266,7 +382,7 @@ function Appointments() {
     <>
       <PageHeader
         title={admin ? 'Appointments' : 'Your chair'}
-        lede={admin ? 'Every booking in the shop. Confirm new ones, cancel what won’t happen.' : 'Book a new appointment or check on the ones you have.'}
+        lede={admin ? 'Every booking in the shop. Confirm new ones, cancel what won’t happen, mark past ones done.' : 'Book a new appointment or check on the ones you have.'}
       />
 
       {loadError ? (
@@ -287,22 +403,11 @@ function Appointments() {
           )}
 
           <section aria-labelledby="list-title">
-            <div className="flex items-end justify-between gap-4 border-b border-ink pb-4">
+            <div className="border-b border-ink pb-4">
               <h2 id="list-title" className="font-display text-4xl">
                 {admin ? 'All bookings' : 'Your appointments'}
                 {!isLoading && <span className="text-muted text-2xl tabular-nums"> ({appointments.length})</span>}
               </h2>
-              {appointments.length > 1 && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setSortOrder((o) => (o === 'desc' ? 'asc' : 'desc'))}
-                  aria-label={`Sort by date, currently ${sortOrder === 'desc' ? 'latest first' : 'earliest first'}`}
-                >
-                  {sortOrder === 'desc' ? <FiArrowDown aria-hidden="true" /> : <FiArrowUp aria-hidden="true" />}
-                  {sortOrder === 'desc' ? 'Latest first' : 'Earliest first'}
-                </Button>
-              )}
             </div>
 
             {isLoading ? (
@@ -322,22 +427,16 @@ function Appointments() {
                 {admin ? 'No bookings yet.' : 'Nothing booked yet. Pick a service above to get started.'}
               </p>
             ) : (
-              <ul>
-                <AnimatePresence initial={false}>
-                  {sorted.map((a) => (
-                    <motion.li
-                      key={a.id}
-                      layout={!reduce}
-                      initial={reduce ? false : { opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                      transition={{ duration: 0.45, ease }}
-                    >
-                      <AppointmentRow a={a} admin={admin} onStatus={changeStatus} busy={busyId === a.id} />
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </ul>
+              <>
+                {upcoming.length > 0 ? (
+                  <AppointmentList id="upcoming-title" title="Upcoming" items={upcoming} admin={admin} onStatus={changeStatus} onCancel={cancelOwn} busyId={busyId} reduce={reduce} />
+                ) : (
+                  <p className="pt-6 pb-10 text-muted">{admin ? 'Nothing upcoming.' : 'Nothing upcoming. Book a chair above.'}</p>
+                )}
+                {past.length > 0 && (
+                  <AppointmentList id="past-title" title="Past" items={past} admin={admin} onStatus={changeStatus} onCancel={cancelOwn} busyId={busyId} reduce={reduce} />
+                )}
+              </>
             )}
           </section>
         </>

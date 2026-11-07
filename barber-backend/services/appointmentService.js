@@ -77,7 +77,18 @@ export class AppointmentService {
       throw new Error('Forbidden');
     }
 
-    return this.appointmentRepo.update(id, data);
+    // Only these fields are editable; anything else in the body is ignored.
+    const allowed = {};
+    for (const key of ['serviceId', 'startAt', 'notes', 'status']) {
+      if (data[key] !== undefined) allowed[key] = data[key];
+    }
+
+    // A customer may cancel their booking, but not confirm or complete it.
+    if (user.role !== 'ADMIN' && allowed.status !== undefined && allowed.status !== 'CANCELLED') {
+      throw new Error('Forbidden');
+    }
+
+    return this.appointmentRepo.update(id, allowed);
   }
 
   async deleteAppointment(id, user) {
@@ -92,6 +103,9 @@ export class AppointmentService {
   }
 
   async changeStatus(id, status) {
+    if (!['PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED'].includes(status)) {
+      throw new Error('Invalid status value');
+    }
     return this.appointmentRepo.update(id, { status });
   }
 }

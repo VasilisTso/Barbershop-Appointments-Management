@@ -71,7 +71,9 @@ export const AppointmentController = ({ appointmentService }) => {
 
     book: async (req, res) => {
       try {
-        const payload = { ...req.body, userId: req.user.id };
+        // Whitelist: a customer can't set status or another user's id on create.
+        const { serviceId, startAt, notes } = req.body;
+        const payload = { serviceId: Number(serviceId), startAt, notes: notes?.trim() || null, userId: req.user.id };
         const data = await appointmentService.bookAppointment(payload);
         res.status(201).json(data);
       } catch (err) {

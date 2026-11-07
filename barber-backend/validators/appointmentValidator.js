@@ -9,6 +9,11 @@ export const validateAppointmentCreate = [
     .isISO8601()
     .withMessage('Start time must be valid')
     .notEmpty(),
+  body('notes')
+    .optional({ values: 'null' })
+    .isString()
+    .isLength({ max: 500 })
+    .withMessage('Notes must be 500 characters or fewer'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -32,6 +37,11 @@ export const validateAppointmentUpdate = [
     .isString()
     .isIn(['PENDING', 'CONFIRMED', 'CANCELLED'])
     .withMessage('Invalid status value'),
+  body('notes')
+    .optional({ values: 'null' })
+    .isString()
+    .isLength({ max: 500 })
+    .withMessage('Notes must be 500 characters or fewer'),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
